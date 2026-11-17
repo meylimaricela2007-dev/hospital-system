@@ -1,0 +1,10 @@
+package com.sistema.hospital.repository;
+
+import com.sistema.hospital.model.Sucursal;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface SucursalRepository extends JpaRepository<Sucursal, Integer> {
+    List<Sucursal> findByEstadoTrue();
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <a href="/admin/usuarios" class="text-muted small text-decoration-none d-inline-block mb-3">
+                    <i class="fas fa-arrow-left me-1"></i> Volver al listado
+                </a>
+
+                <div class="hh-card">
+                    <!-- id oculto: si tiene valor, estamos en modo "Editar"; si está vacío, es "Crear" -->
+                    <input type="hidden" id="idUsuarioEditar" th:value="${idUsuarioEditar}">
+
+                    <h1 class="hh-section-title" id="tituloFormulario">Crear Usuario</h1>
+                    <p class="hh-section-desc mb-4" id="subtituloFormulario">Completa los datos del nuevo usuario del sistema.</p>
+
+                    <div id="alertaExito" class="alert alert-success d-none"></div>
+                    <div id="alertaError" class="alert alert-danger d-none"></div>
+
+                    <form id="formUsuario" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre completo *</label>
+                                <input type="text" class="form-control" id="nombreCompleto" required>
+                                <div class="invalid-feedback" data-error-for="nombreCompleto"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Correo electrónico *</label>
+                                <input type="email" class="form-control" id="correoElectronico" required>
+                                <div class="invalid-feedback" data-error-for="correoElectronico"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre de usuario * <span class="text-muted fw-normal">(8-9 caracteres)</span></label>
+                                <input type="text" class="form-control" id="nombreUsuario" required>
+                                <div class="invalid-feedback" data-error-for="nombreUsuario"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Contraseña <span id="etiquetaContrasena" class="text-muted fw-normal">*</span>
+                                </label>
+                                <input type="password" class="form-control" id="contrasena" placeholder="Mínimo 9 caracteres">
+                                <div class="invalid-feedback" data-error-for="contrasena"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Rol *</label>
+                                <select class="form-select" id="idRol" required></select>
+                                <div class="invalid-feedback" data-error-for="idRol"></div>
+                            </div>
+                            <div class="col-md-6" id="campoEspecialidad" style="display:none;">
+                                <label class="form-label">Especialidad <span class="text-muted fw-normal">(solo Médico)</span></label>
+                                <select class="form-select" id="idEspecialidad"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Sucursal <span class="text-muted fw-normal">(opcional)</span></label>
+                                <select class="form-select" id="idSucursal">
+                                    <option value="">-- Sin asignar --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Documento de identificación (DPI) <span class="text-muted fw-normal">(opcional)</span></label>
+                                <input type="text" class="form-control text-mono" id="dpi" maxlength="13">
+                                <div class="invalid-feedback" data-error-for="dpi"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">NIT <span class="text-muted fw-normal">(opcional)</span></label>
+                                <input type="text" class="form-control" id="nit" maxlength="10">
+                                <div class="invalid-feedback" data-error-for="nit"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Número de teléfono <span class="text-muted fw-normal">(opcional)</span></label>
+                                <input type="text" class="form-control text-mono" id="telefono" maxlength="8">
+                                <div class="invalid-feedback" data-error-for="telefono"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Número de seguro <span class="text-muted fw-normal">(opcional)</span></label>
+                                <input type="text" class="form-control" id="numeroSeguro" maxlength="50">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label d-block">Estado</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="estadoActivo" checked style="width: 3em; height: 1.5em;">
+                                    <label class="form-check-label ms-2" for="estadoActivo" id="estadoActivoLabel">Activo</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4 pt-3" style="border-top: 1px solid var(--color-border);">
+                            <button type="submit" class="btn btn-accent btn-lg" id="btnGuardar">
+                                <i class="fas fa-floppy-disk me-2"></i><span id="btnGuardarTexto">Crear</span>
+                            </button>
+                            <a href="/admin/usuarios" class="btn btn-outline-teal btn-lg">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/usuario-formulario.js}"></script>
+
+</body>
+</html>

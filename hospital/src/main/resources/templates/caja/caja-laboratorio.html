@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Reutilizamos citas.css: trae .resumen-fila (comprobante) y .selection-card (método de pago). -->
+<link rel="stylesheet" th:href="@{/css/citas.css}">
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight" id="print-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3 d-print-none">
+                    <div>
+                        <span class="hh-eyebrow-section">Panel interno · CU-10</span>
+                        <h1 class="hh-section-title mb-0">Cobro de Laboratorio en Caja</h1>
+                    </div>
+                    <a href="/caja" class="btn btn-outline-teal">
+                        <i class="fas fa-stethoscope me-2"></i>Cobro Consulta
+                    </a>
+                </div>
+
+                <!-- ==================================================== -->
+                <!-- PASOS 2-4: buscar la orden (flujo normal, FA01)        -->
+                <!-- ==================================================== -->
+                <div id="vistaBusquedaLab" class="d-print-none">
+                    <div class="hh-card mb-4">
+                        <label class="form-label">Buscar por</label>
+                        <div class="btn-group mb-3" role="group" aria-label="Tipo de búsqueda">
+                            <input type="radio" class="btn-check" name="tipoBusquedaLab" id="labTipoDpi" value="DPI" checked>
+                            <label class="btn btn-outline-teal" for="labTipoDpi"><i class="fas fa-id-card me-1"></i> Por DPI</label>
+
+                            <input type="radio" class="btn-check" name="tipoBusquedaLab" id="labTipoOrden" value="ORDEN">
+                            <label class="btn btn-outline-teal" for="labTipoOrden"><i class="fas fa-hashtag me-1"></i> Por No. Orden</label>
+                        </div>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-8">
+                                <input type="text" id="labInputBusqueda" class="form-control form-control-lg text-mono"
+                                       placeholder="DPI del paciente (13 dígitos)" maxlength="13" autocomplete="off">
+                                <div class="small text-muted mt-1" id="labContadorDpi">0/13 dígitos</div>
+                            </div>
+                            <div class="col-md-4 align-self-start">
+                                <button class="btn btn-accent btn-lg w-100" id="labBtnBuscar">
+                                    <span><i class="fas fa-magnifying-glass me-2"></i>Buscar</span>
+                                    <span id="labBtnBuscarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="labResultadoBusqueda"></div>
+                </div>
+
+                <!-- ==================================================== -->
+                <!-- PASOS 5-8: cobrar (flujo normal / FA03)                -->
+                <!-- ==================================================== -->
+                <div id="vistaCobroLab" class="hh-card d-none d-print-none">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="hh-eyebrow-section">Cobro de laboratorio</span>
+                            <h2 class="hh-section-title mb-0">Orden <span class="text-mono" id="cobroLabNoOrden"></span></h2>
+                        </div>
+                        <button class="btn btn-link text-muted text-decoration-none" onclick="volverABusquedaLab()">
+                            <i class="fas fa-arrow-left me-1"></i>Buscar otra
+                        </button>
+                    </div>
+
+                    <div class="mb-3" id="cobroLabDetalle"></div>
+
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-4"
+                         style="background: var(--color-primary-50); border-radius: var(--radius-md);">
+                        <span class="fw-semibold">Monto a cobrar</span>
+                        <span class="text-mono fw-bold" style="font-size:1.5rem; color: var(--color-primary-700);" id="cobroLabMonto">Q0.00</span>
+                    </div>
+
+                    <div id="cobroLabAlerta" class="alert alert-danger d-none"></div>
+
+                    <label class="form-label">Método de pago</label>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Efectivo" onclick="seleccionarMetodoLab(this)">
+                                <i class="fas fa-money-bill-wave d-block mb-1"></i>Efectivo (Q)
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Visa" onclick="seleccionarMetodoLab(this)">
+                                <i class="fa-brands fa-cc-visa d-block mb-1"></i>Visa
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Mastercard" onclick="seleccionarMetodoLab(this)">
+                                <i class="fa-brands fa-cc-mastercard d-block mb-1"></i>Mastercard
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Débito" onclick="seleccionarMetodoLab(this)">
+                                <i class="fas fa-credit-card d-block mb-1"></i>Débito
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 7: Efectivo -->
+                    <div id="camposEfectivoLab" class="d-none mb-3">
+                        <label class="form-label">Monto Recibido (Q)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Q</span>
+                            <input type="number" step="0.01" min="0" class="form-control text-mono" id="montoRecibidoLab" placeholder="0.00">
+                        </div>
+                        <div class="small text-muted mt-1" id="cambioPreviewLab"></div>
+                    </div>
+
+                    <!-- FA03: tarjeta -->
+                    <div id="camposTarjetaLab" class="d-none mb-3">
+                        <label class="form-label">Últimos 4 dígitos de la tarjeta</label>
+                        <input type="text" class="form-control text-mono" id="tarjetaUltimos4Lab" maxlength="4" placeholder="0000">
+                        <div class="small text-danger mt-1 d-none" id="errorUltimos4Lab">Ingrese los últimos 4 dígitos de la tarjeta.</div>
+                        <p class="text-muted small mt-2 mb-0">
+                            <i class="fas fa-flask me-1"></i>Modo de prueba: cualquier número aprueba el pago.
+                            Termina en <strong>0002</strong>, <strong>0003</strong> o <strong>0004</strong> para simular un rechazo (FA04).
+                        </p>
+                    </div>
+
+                    <button class="btn btn-accent btn-lg w-100" id="btnConfirmarPagoLab" disabled onclick="registrarPagoLab()">
+                        <span id="btnConfirmarPagoLabTexto"><i class="fas fa-cash-register me-2"></i>Confirmar Pago</span>
+                        <span id="btnConfirmarPagoLabSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                    </button>
+                </div>
+
+                <!-- ==================================================== -->
+                <!-- PASOS 10-11: comprobante (componente PaymentReceipt)   -->
+                <!-- ==================================================== -->
+                <div id="vistaComprobanteLab" class="hh-card text-center d-none">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center d-print-none"
+                         style="width:72px; height:72px; border-radius:50%; background: var(--color-success-bg);">
+                        <i class="fas fa-circle-check fa-2x" style="color: var(--color-success);"></i>
+                    </div>
+                    <h1 class="hh-section-title">Comprobante de Pago</h1>
+                    <p class="text-muted mb-4" id="comprobanteLabMensaje"></p>
+
+                    <div class="text-start" id="detalleComprobanteLab"></div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4 d-print-none">
+                        <button class="btn btn-outline-teal btn-lg flex-fill" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>Imprimir
+                        </button>
+                        <button class="btn btn-teal btn-lg flex-fill" onclick="nuevoCobroLab()">
+                            <i class="fas fa-rotate-right me-2"></i>Nuevo Cobro
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/caja-laboratorio.js}"></script>
+
+</body>
+</html>

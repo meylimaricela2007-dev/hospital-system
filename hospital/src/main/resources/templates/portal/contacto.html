@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1">
+
+    <section class="hh-hero" style="padding: 3.5rem 0 4.5rem;">
+        <div class="container position-relative" style="z-index: 2;">
+            <span class="eyebrow"><i class="fas fa-map-location-dot"></i> Contacto</span>
+            <h1 style="font-size: clamp(2rem, 4vw, 2.8rem);">Estamos para ayudarte</h1>
+            <p class="lead mb-0">Llámanos, escríbenos o visítanos en nuestra sede.</p>
+        </div>
+        <svg class="hh-pulse-line" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0,45 L700,45 L730,45 L750,15 L775,75 L800,45 L1200,45" />
+        </svg>
+    </section>
+
+    <section class="hh-section">
+        <div class="container">
+
+            <div class="text-center mb-5">
+                <h2 class="hh-section-title">Información de contacto</h2>
+            </div>
+
+            <!--
+                CORREGIDO: antes las tarjetas estaban apiladas en una columna junto al
+                formulario de mensajes. La clase .hh-card tiene "height: 100%" (pensada
+                para cuadrículas de tarjetas iguales), así que cada tarjeta se estiraba
+                al alto de TODA la columna y se salía encima del footer.
+                Ahora van en una cuadrícula de 2 x 2 (row + col-md-6), que es justo el
+                caso para el que se diseñó h-100: tarjetas del mismo alto por fila.
+                Se quitó el formulario "Envíanos un mensaje": no estaba conectado a
+                ningún backend (solo mostraba un alert), así que no hace falta crear
+                clases/endpoints nuevos para él.
+            -->
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <div class="row g-4">
+
+                        <div class="col-md-6" th:each="sede : ${sedes}">
+                            <div class="hh-card hh-reveal">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="icon-badge flex-shrink-0 mb-0"><i class="fas fa-location-dot"></i></div>
+                                    <div>
+                                        <h3 th:text="${sede.nombre}">Sede</h3>
+                                        <p class="mb-1" th:text="${sede.direccion}">Dirección</p>
+                                        <p class="text-mono mb-0" th:if="${sede.telefono != null}" th:text="${sede.telefono}">Teléfono</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="hh-card hh-reveal">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="icon-badge flex-shrink-0 mb-0"><i class="fas fa-phone"></i></div>
+                                    <div>
+                                        <h3>Teléfono</h3>
+                                        <p class="text-mono">(502) 2222-0000</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="hh-card hh-reveal">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="icon-badge flex-shrink-0 mb-0"><i class="fas fa-envelope"></i></div>
+                                    <div>
+                                        <h3>Correo electrónico</h3>
+                                        <p>saravia43210@gmail.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="hh-card hh-reveal" style="border-color: var(--color-danger);">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="icon-badge flex-shrink-0 mb-0" style="background: var(--color-danger-bg); color: var(--color-danger);">
+                                        <i class="fas fa-truck-medical"></i>
+                                    </div>
+                                    <div>
+                                        <h3>Emergencias</h3>
+                                        <p class="mb-0 fw-semibold" style="color: var(--color-danger);">Atención 24/7, todos los días</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

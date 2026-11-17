@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+  El modal "Verificar Registro" (DPI) vive AQUÍ, una sola vez, porque el
+  enlace "Agendar Cita" del menú está en todas las páginas. Antes estaba
+  duplicado en 2-3 lugares con IDs distintos; solo esta copia es la real.
+-->
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <title th:text="${titulo} ?: 'HIS Hospital'">HIS Hospital</title>
+</head>
+
+<body>
+
+<!-- Todo lo que sigue (nav + modal) va envuelto en un solo <div th:fragment="navbar">
+     para que ambos viajen juntos cuando una página hace:
+       <div th:replace="~{fragments/header :: navbar}"></div>
+     ANTES el modal estaba como hermano después de </nav>, fuera de este fragmento,
+     así que Thymeleaf nunca lo copiaba a las páginas: el botón "Agendar Cita"
+     intentaba abrir un modal que sencillamente no existía en el HTML final,
+     y Bootstrap fallaba con "Cannot read properties of undefined (reading 'backdrop')". -->
+<div th:fragment="navbar">
+
+<nav class="navbar navbar-expand-lg hh-navbar sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <span class="brand-mark"><i class="fas fa-heart-pulse"></i></span>
+            <span>HIS<small>Sistema Hospitalario</small></span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fas fa-house me-1"></i> Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalVerificarDpi">
+                        <i class="fas fa-calendar-plus me-1"></i> Agendar Cita
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/servicios"><i class="fas fa-stethoscope me-1"></i> Servicios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contacto"><i class="fas fa-phone me-1"></i> Contacto</a>
+                </li>
+            </ul>
+
+            <div class="d-flex gap-2" th:if="${session.usuario == null}">
+                <a href="/login" class="btn btn-outline-light btn-nav btn-sm">
+                    <i class="fas fa-right-to-bracket me-1"></i> Iniciar Sesión
+                </a>
+                <a href="/registro" class="btn btn-accent btn-sm">
+                    <i class="fas fa-user-plus me-1"></i> Registrarme
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-3" th:if="${session.usuario != null}">
+                <a th:href="@{${session.usuario.rolNombre == 'Paciente' ? '/dashboard' : '/admin/dashboard'}}"
+                   class="text-white-50 small text-decoration-none">
+                    <i class="fas fa-circle-user me-1"></i>
+                    <span th:text="${session.usuario.nombreCompleto}">Usuario</span>
+                </a>
+                <a href="/logout" class="btn btn-outline-light btn-nav btn-sm">
+                    <i class="fas fa-right-from-bracket me-1"></i> Salir
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ================================================================ -->
+<!-- MODAL: Verificar Registro (CU-00, paso 4-8 del flujo normal)      -->
+<!-- ================================================================ -->
+<div class="modal fade" id="modalVerificarDpi" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: var(--radius-lg); overflow: hidden;">
+            <div class="modal-header border-0" style="background: var(--color-primary-900); color: #fff;">
+                <h5 class="modal-title fw-bold" style="font-family: var(--font-display);">
+                    <i class="fas fa-id-card me-2"></i>Verificar registro
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small mb-3">
+                    Ingrese su número de DPI para verificar si está registrado en el sistema.
+                </p>
+
+                <div id="resultadoVerificacion" class="alert d-none" role="alert">
+                    <div class="d-flex align-items-start">
+                        <i id="iconoResultado" class="me-2 mt-1"></i>
+                        <div class="flex-grow-1">
+                            <div id="mensajeResultado"></div>
+                            <div id="accionesResultado" class="mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="formVerificarDpi" novalidate>
+                    <label for="dpiInput" class="form-label">Número de DPI</label>
+                    <input type="text" class="form-control form-control-lg text-mono" id="dpiInput"
+                           maxlength="13" placeholder="0000000000000" autocomplete="off" required>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <small id="dpiError" class="text-danger fw-semibold d-none">
+                            <i class="fas fa-circle-exclamation me-1"></i>El DPI debe tener 13 dígitos numéricos.
+                        </small>
+                        <small id="dpiCounter" class="text-muted ms-auto text-mono">0/13</small>
+                    </div>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-accent btn-lg" id="btnVerificarDpi" disabled>
+                            <span id="btnText">Verificar DPI</span>
+                            <span id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- fin th:fragment="navbar" -->
+
+</body>
+</html>

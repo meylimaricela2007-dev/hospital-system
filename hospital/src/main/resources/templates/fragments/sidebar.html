@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Menú lateral del panel interno (todos los roles del personal).
+  Cada módulo aparece solo si el rol de la sesión lo puede usar; las
+  condiciones son las mismas que usa admin/dashboard.html.
+  Uso en una página:  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+-->
+<div th:fragment="sidebar" th:if="${session.usuario != null}" class="hh-sidebar-wrap">
+
+    <!-- Botón flotante para abrir el menú en Fcelulares / pantallas pequeñas -->
+    <button class="btn btn-teal hh-sidebar-toggle d-lg-none d-print-none" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#hhSidebar" aria-controls="hhSidebar">
+        <i class="fas fa-bars me-2"></i>Menú
+    </button>
+
+    <aside id="hhSidebar" class="hh-sidebar offcanvas-lg offcanvas-start d-print-none"
+           tabindex="-1" th:with="rol=${session.usuario.rolNombre}">
+
+        <div class="offcanvas-header d-lg-none">
+            <h5 class="offcanvas-title" style="font-family: var(--font-display);">Menú</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#hhSidebar" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="offcanvas-body hh-sidebar-body">
+
+            <div class="hh-sidebar-user">
+                <div class="avatar"><i class="fas fa-user-shield"></i></div>
+                <div class="min-w-0">
+                    <div class="name" th:text="${session.usuario.nombreCompleto}">Nombre</div>
+                    <div class="role" th:text="${rol}">Rol</div>
+                </div>
+            </div>
+
+            <nav class="hh-sidebar-nav" id="hhSidebarNav">
+
+                <a href="/admin/dashboard" class="hh-side-link"><i class="fas fa-gauge-high"></i><span>Inicio</span></a>
+
+                <!-- ADMINISTRACIÓN -->
+                <div class="hh-side-title" th:if="${rol == 'Administrador'}">Administración</div>
+                <a href="/admin/usuarios" class="hh-side-link" th:if="${rol == 'Administrador'}">
+                    <i class="fas fa-users-gear"></i><span>Usuarios</span></a>
+                <a href="/admin/catalogos" class="hh-side-link" th:if="${rol == 'Administrador'}">
+                    <i class="fas fa-database"></i><span>Catálogos del sistema</span></a>
+                <a href="/admin/sede-especialidad" class="hh-side-link" th:if="${rol == 'Administrador'}">
+                    <i class="fas fa-hospital"></i><span>Especialidades por sede</span></a>
+
+                <!-- ATENCIÓN AL PACIENTE -->
+                <div class="hh-side-title" th:if="${rol == 'Recepcionista' || rol == 'Cajero' || rol == 'Enfermería' || rol == 'Médico'}">Atención al paciente</div>
+                <a href="/recepcion" class="hh-side-link" th:if="${rol == 'Recepcionista'}">
+                    <i class="fas fa-hospital-user"></i><span>Recepción</span></a>
+                <a href="/caja" class="hh-side-link" th:if="${rol == 'Cajero'}">
+                    <i class="fas fa-cash-register"></i><span>Cobro de consulta</span></a>
+                <a href="/caja/laboratorio" class="hh-side-link" th:if="${rol == 'Cajero'}">
+                    <i class="fas fa-file-invoice-dollar"></i><span>Cobro de laboratorio</span></a>
+                <a href="/enfermeria" class="hh-side-link" th:if="${rol == 'Enfermería'}">
+                    <i class="fas fa-kit-medical"></i><span>Signos vitales</span></a>
+                <a href="/medico" class="hh-side-link" th:if="${rol == 'Médico'}">
+                    <i class="fas fa-user-doctor"></i><span>Consulta médica</span></a>
+                <a href="/medico/agenda" class="hh-side-link" th:if="${rol == 'Médico'}">
+                    <i class="fas fa-calendar-days"></i><span>Agenda médica</span></a>
+
+                <!-- LABORATORIO Y FARMACIA -->
+                <div class="hh-side-title" th:if="${rol == 'Laboratorista' || rol == 'Farmacéutico' || rol == 'Administrador'}">Laboratorio y farmacia</div>
+                <a href="/laboratorio" class="hh-side-link" th:if="${rol == 'Laboratorista' || rol == 'Administrador'}">
+                    <i class="fas fa-flask-vial"></i><span>Laboratorio</span></a>
+                <a href="/farmacia" class="hh-side-link" th:if="${rol == 'Farmacéutico'}">
+                    <i class="fas fa-prescription-bottle-medical"></i><span>Despacho de medicamentos</span></a>
+                <a href="/inventario" class="hh-side-link" th:if="${rol == 'Farmacéutico' || rol == 'Administrador'}">
+                    <i class="fas fa-boxes-stacked"></i><span>Bitácora de inventario</span></a>
+            </nav>
+
+            <div class="hh-sidebar-foot">
+                <a href="/logout" class="hh-side-link"><i class="fas fa-right-from-bracket"></i><span>Cerrar sesión</span></a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Marca como activo el enlace que coincide con la URL actual (el más específico gana) -->
+    <script>
+        (function () {
+            var nav = document.querySelector('.hh-navbar');
+            if (nav) document.documentElement.style.setProperty('--hh-nav-h', nav.offsetHeight + 'px');
+            var ruta = window.location.pathname.replace(/\/+$/, '') || '/';
+            var mejor = null, largo = -1;
+            document.querySelectorAll('#hhSidebarNav .hh-side-link').forEach(function (a) {
+                var href = a.getAttribute('href');
+                var coincide = href === '/admin/dashboard' ? ruta === href
+                             : (ruta === href || ruta.indexOf(href + '/') === 0);
+                if (coincide && href.length > largo) { mejor = a; largo = href.length; }
+            });
+            if (mejor) mejor.classList.add('active');
+        })();
+    </script>
+</div>
+
+</body>
+</html>

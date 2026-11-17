@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container-fluid px-lg-5">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+            <div>
+                <span class="hh-eyebrow-section">Panel interno · CU-16</span>
+                <h1 class="hh-section-title mb-0">Agenda Médica</h1>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-teal btn-lg" id="btnTogglePanelTareas" title="Mostrar u ocultar tareas">
+                    <i class="fas fa-list-check me-2"></i>Tareas
+                </button>
+                <button class="btn btn-accent btn-lg" id="btnNuevoEvento">
+                    <i class="fas fa-plus me-2"></i>Nuevo Evento
+                </button>
+            </div>
+        </div>
+
+        <div id="alertaExito" class="alert alert-success d-none"></div>
+        <div id="alertaError" class="alert alert-danger d-none"></div>
+
+        <div class="row g-4">
+            <div class="col-12" id="columnaCalendario">
+                <div class="hh-card">
+                    <div id="calendario"></div>
+                    <div class="d-flex flex-wrap gap-3 mt-3 small text-muted">
+                        <span><i class="fas fa-square me-1" style="color:#8b5cf6"></i>Evento</span>
+                        <span><i class="fas fa-square me-1" style="color:#2563eb"></i>Confirmada</span>
+                        <span><i class="fas fa-square me-1" style="color:#0d9488"></i>Paciente presente</span>
+                        <span><i class="fas fa-square me-1" style="color:#0891b2"></i>Signos vitales</span>
+                        <span><i class="fas fa-square me-1" style="color:#d97706"></i>En espera</span>
+                        <span><i class="fas fa-square me-1" style="color:#ea580c"></i>Consulta médica</span>
+                        <span><i class="fas fa-square me-1" style="color:#16a34a"></i>Atención finalizada</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TaskPanel (FA06) -->
+            <div class="col-lg-4 d-none" id="columnaTareas">
+                <div class="hh-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2 class="h5 mb-0"><i class="fas fa-list-check me-2"></i>Tareas</h2>
+                            <div class="small text-muted" id="tareasFechaTexto"></div>
+                        </div>
+                        <span class="badge badge-soft-info" id="tareasConteo">0</span>
+                    </div>
+
+                    <div class="btn-group w-100 mb-2" role="group" id="filtrosTareas">
+                        <button type="button" class="btn btn-sm btn-teal" data-filtro="pendientes">Pendientes</button>
+                        <button type="button" class="btn btn-sm btn-outline-teal" data-filtro="completadas">Completadas</button>
+                        <button type="button" class="btn btn-sm btn-outline-teal" data-filtro="todas">Todas</button>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="chkTodasFechas">
+                        <label class="form-check-label small" for="chkTodasFechas">Ver tareas de todas las fechas</label>
+                    </div>
+
+                    <div id="listaTareas"></div>
+
+                    <button class="btn btn-accent w-100 mt-3" id="btnNuevaTarea">
+                        <i class="fas fa-plus me-2"></i>Nueva Tarea
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<!-- Formulario de evento (pasos 3-6 y FA07) -->
+<div class="modal fade" id="modalEvento" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: var(--radius-lg);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="tituloModalEvento">Nuevo Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="formEvento" novalidate>
+                <div class="modal-body">
+                    <div id="alertaEventoError" class="alert alert-danger d-none"></div>
+                    <input type="hidden" id="ev_idEvento">
+                    <div class="mb-3">
+                        <label class="form-label" for="ev_titulo">Título *</label>
+                        <input type="text" class="form-control" id="ev_titulo" maxlength="200">
+                        <div class="invalid-feedback" data-error-for="ev_titulo"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="ev_descripcion">Descripción</label>
+                        <textarea class="form-control" id="ev_descripcion" rows="2" maxlength="500"></textarea>
+                        <div class="invalid-feedback" data-error-for="ev_descripcion"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="ev_idTipoEvento">Tipo de evento *</label>
+                        <select class="form-select" id="ev_idTipoEvento"><option value="">-- Seleccione --</option></select>
+                        <div class="invalid-feedback" data-error-for="ev_idTipoEvento"></div>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="ev_todoElDia">
+                        <label class="form-check-label" for="ev_todoElDia">Todo el día</label>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="ev_fechaInicio">Fecha de inicio *</label>
+                            <input type="datetime-local" class="form-control" id="ev_fechaInicio">
+                            <div class="invalid-feedback" data-error-for="ev_fechaInicio"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ev_fechaFin">Fecha de fin *</label>
+                            <input type="datetime-local" class="form-control" id="ev_fechaFin">
+                            <div class="invalid-feedback" data-error-for="ev_fechaFin"></div>
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-3">
+                        <i class="fas fa-circle-info me-1"></i>Mientras dure el evento no se ofrecerán horarios de cita en ese intervalo.
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-teal" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-accent" id="btnGuardarEvento"><i class="fas fa-check me-2"></i>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Detalle de evento o cita (FA01) -->
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: var(--radius-lg);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="detTitulo"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2" id="detBadge"></div>
+                <div class="small text-muted">Inicio</div><div class="mb-2" id="detInicio"></div>
+                <div class="small text-muted">Fin</div><div class="mb-2" id="detFin"></div>
+                <div id="detBloquePaciente" class="d-none"><div class="small text-muted">Paciente</div><div class="mb-2" id="detPaciente"></div></div>
+                <div class="small text-muted" id="detEtiquetaDescripcion">Descripción</div><div id="detDescripcion"></div>
+            </div>
+            <div class="modal-footer border-0" id="detAcciones">
+                <button type="button" class="btn btn-outline-danger" id="btnEliminarEvento"><i class="fas fa-trash me-2"></i>Eliminar</button>
+                <button type="button" class="btn btn-teal" id="btnEditarEvento"><i class="fas fa-pen me-2"></i>Editar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FA04: confirmación de eliminación -->
+<div class="modal fade" id="modalConfirmarEliminacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: var(--radius-lg); border: none;">
+            <div class="modal-body p-4 text-center">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                     style="width:64px; height:64px; border-radius:50%; background: var(--color-danger-bg);">
+                    <i class="fas fa-triangle-exclamation fa-2x" style="color: var(--color-danger);"></i>
+                </div>
+                <h5 class="mb-2">¿Está seguro de eliminar este evento?</h5>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-link text-primary text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn" style="background: var(--color-danger); color:#fff;" id="btnConfirmarEliminar">
+                    <i class="fas fa-trash me-2"></i>Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nueva tarea (FA06) -->
+<div class="modal fade" id="modalTarea" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: var(--radius-lg);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Nueva Tarea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="formTarea" novalidate>
+                <div class="modal-body">
+                    <div id="alertaTareaError" class="alert alert-danger d-none"></div>
+                    <div class="mb-3">
+                        <label class="form-label" for="ta_titulo">Título *</label>
+                        <input type="text" class="form-control" id="ta_titulo" maxlength="200">
+                        <div class="invalid-feedback" data-error-for="ta_titulo"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="ta_descripcion">Descripción</label>
+                        <textarea class="form-control" id="ta_descripcion" rows="2" maxlength="1000"></textarea>
+                        <div class="invalid-feedback" data-error-for="ta_descripcion"></div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="ta_idPrioridad">Prioridad *</label>
+                            <select class="form-select" id="ta_idPrioridad"><option value="">-- Seleccione --</option></select>
+                            <div class="invalid-feedback" data-error-for="ta_idPrioridad"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ta_fechaLimite">Fecha límite *</label>
+                            <input type="date" class="form-control" id="ta_fechaLimite">
+                            <div class="invalid-feedback" data-error-for="ta_fechaLimite"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-teal" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-accent" id="btnGuardarTarea"><i class="fas fa-check me-2"></i>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/locales/es.global.min.js"></script>
+<script th:src="@{/js/agenda.js}"></script>
+
+</body>
+</html>

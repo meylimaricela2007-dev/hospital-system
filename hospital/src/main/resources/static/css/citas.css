@@ -1,0 +1,177 @@
+/* =====================================================================
+   ESTILOS DEL WIZARD DE CITAS (CU-03)
+   Se cargan además de styles.css, solo en citas/agendar.html
+   ===================================================================== */
+
+.wizard-shell {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.wizard-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  padding: 2.25rem;
+}
+
+/* ---- Barra de progreso de 5 pasos ---- */
+.steps-progress {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 2.5rem;
+}
+
+.steps-progress::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: var(--color-border);
+  z-index: 0;
+}
+
+.step-item { position: relative; z-index: 1; text-align: center; flex: 1; }
+
+.step-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  color: var(--color-ink-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin: 0 auto 0.5rem;
+  transition: all 0.25s ease;
+}
+
+.step-circle.active {
+  border-color: var(--color-accent-500);
+  background: var(--color-accent-500);
+  color: #fff;
+  box-shadow: 0 0 0 5px var(--color-accent-100);
+}
+
+.step-circle.completed {
+  border-color: var(--color-primary-600);
+  background: var(--color-primary-600);
+  color: #fff;
+}
+
+.step-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--color-ink-300);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.step-label.active { color: var(--color-accent-600); }
+.step-label.completed { color: var(--color-primary-700); }
+
+/* ---- Contenido de cada paso ---- */
+.step-content { display: none; }
+.step-content.active { display: block; animation: hh-fade-in 0.35s ease; }
+@keyframes hh-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.step-title { font-size: 1.35rem; margin-bottom: 0.3rem; }
+.step-subtitle { color: var(--color-ink-500); font-size: 0.92rem; margin-bottom: 1.5rem; }
+
+/* ---- Calendario (paso 4) ---- */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.calendar-day {
+  text-align: center;
+  padding: 0.75rem 0.25rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.calendar-day.disabled { opacity: 0.35; cursor: not-allowed; }
+.calendar-day:not(.disabled):hover { border-color: var(--color-primary-500); }
+.calendar-day.selected { border-color: var(--color-accent-500); background: var(--color-accent-100); }
+
+.day-number { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; color: var(--color-ink-900); }
+.day-name { font-size: 0.7rem; color: var(--color-ink-500); text-transform: uppercase; }
+.day-available { display: block; font-size: 0.65rem; color: var(--color-success); margin-top: 2px; }
+
+/* ---- Horarios (franjas de hora) ---- */
+#horariosList { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+.time-slot {
+  font-family: var(--font-mono);
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+}
+.time-slot:hover { border-color: var(--color-primary-500); }
+.time-slot.selected { border-color: var(--color-accent-500); background: var(--color-accent-500); color: #fff; }
+
+/* ---- Resumen (paso 5) ---- */
+.resumen-fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.95rem;
+}
+.resumen-fila:last-child { border-bottom: none; }
+.resumen-fila .etiqueta { color: var(--color-ink-500); }
+.resumen-fila .valor { font-weight: 600; color: var(--color-ink-900); text-align: right; }
+
+/* ---- Navegacion inferior del wizard ---- */
+.wizard-nav { display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+
+
+/* ---- Calendario mensual dinámico (CU-03, paso 4) ---- */
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.9rem; }
+.calendar-header .mes-titulo { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; color: var(--color-ink-900); }
+.calendar-nav {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1.5px solid var(--color-border); background: #fff;
+  color: var(--color-primary-900); cursor: pointer;
+  transition: all 0.15s ease;
+}
+.calendar-nav:hover:not(:disabled) { border-color: var(--color-primary-500); background: var(--color-primary-50); }
+.calendar-nav:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.calendar-weekdays {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;
+  margin-bottom: 0.4rem; text-align: center;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--color-ink-500);
+}
+.calendar-day.empty { border: none; background: none; cursor: default; pointer-events: none; }
+.calendar-day.has-slots { background: var(--color-primary-50); border-color: var(--color-primary-100); }
+.calendar-day.has-slots:hover { border-color: var(--color-primary-500); transform: translateY(-1px); }
+.calendar-day.disabled { background: transparent; }
+.calendar-day.disabled .day-number { color: var(--color-ink-300); }
+.calendar-day.today .day-number { text-decoration: underline; text-decoration-color: var(--color-accent-500); text-underline-offset: 4px; }
+.calendar-day.selected { border-color: var(--color-accent-500); background: var(--color-accent-100); }
+
+.calendar-leyenda { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 0.9rem; font-size: 0.78rem; color: var(--color-ink-500); }
+.leyenda-punto { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 0.35rem; vertical-align: -1px; border: 1.5px solid var(--color-border); }
+.leyenda-punto.con-cupos { background: var(--color-primary-50); border-color: var(--color-primary-500); }
+.leyenda-punto.sin-cupos { background: transparent; opacity: 0.6; }
+
+@media (max-width: 575.98px) {
+  .calendar-grid, .calendar-weekdays { gap: 0.25rem; }
+  .calendar-day { padding: 0.5rem 0.1rem; }
+  .day-available { font-size: 0.55rem; }
+}

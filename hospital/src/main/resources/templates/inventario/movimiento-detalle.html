@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <a href="/inventario" class="text-muted small text-decoration-none d-inline-block mb-3">
+                    <i class="fas fa-arrow-left me-1"></i> Volver a la bitácora
+                </a>
+
+                <input type="hidden" id="idMovimiento" th:value="${idMovimiento}">
+                <div id="alertaError" class="alert alert-danger d-none"></div>
+
+                <div class="hh-card d-none" id="tarjetaDetalle">
+                    <span class="hh-eyebrow-section">Panel interno · CU-15</span>
+                    <h1 class="hh-section-title">Movimiento <span class="text-mono" id="detNumero"></span></h1>
+                    <div class="mb-4" id="detBadges"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6"><div class="small text-muted">Medicamento</div><div id="detMedicamento" class="fw-semibold"></div></div>
+                        <div class="col-md-6"><div class="small text-muted">Sucursal</div><div id="detSucursal" class="fw-semibold"></div></div>
+                        <div class="col-md-4"><div class="small text-muted">Cantidad</div><div id="detCantidad" class="text-mono"></div></div>
+                        <div class="col-md-4"><div class="small text-muted">Stock anterior</div><div id="detAnterior" class="text-mono"></div></div>
+                        <div class="col-md-4"><div class="small text-muted">Stock nuevo</div><div id="detNuevo" class="text-mono"></div></div>
+                        <div class="col-md-4"><div class="small text-muted">Costo unitario</div><div id="detCosto" class="text-mono"></div></div>
+                        <div class="col-md-4"><div class="small text-muted">Referencia</div><div id="detReferencia" class="text-mono"></div></div>
+                        <div class="col-md-4"><div class="small text-muted">Registrado por</div><div id="detUsuario"></div></div>
+                        <div class="col-md-6"><div class="small text-muted">Fecha y hora</div><div id="detFecha"></div></div>
+                        <div class="col-12"><div class="small text-muted">Motivo / Notas</div><div id="detMotivo"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/inventario-detalle.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Reutilizamos citas.css: trae .resumen-fila (comprobante) y .selection-card (método de pago). -->
+<link rel="stylesheet" th:href="@{/css/citas.css}">
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight" id="print-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3 d-print-none">
+                    <div>
+                        <span class="hh-eyebrow-section">Panel interno · CU-06</span>
+                        <h1 class="hh-section-title mb-0">Cobro de Consulta en Caja</h1>
+                    </div>
+                    <!-- CU-10, paso 1: acceso a "Cobro de Laboratorio en Caja" -->
+                    <a href="/caja/laboratorio" class="btn btn-outline-teal">
+                        <i class="fas fa-flask me-2"></i>Cobro Lab
+                    </a>
+                </div>
+
+                <!-- ==================================================== -->
+                <!-- PASO 1: buscar la cita (flujo normal, FA02)            -->
+                <!-- ==================================================== -->
+                <div id="vistaBusqueda" class="d-print-none">
+                    <div class="hh-card mb-4">
+                        <label class="form-label">Buscar por</label>
+                        <div class="btn-group mb-3" role="group" aria-label="Tipo de búsqueda">
+                            <input type="radio" class="btn-check" name="tipoBusquedaCaja" id="cajaTipoDpi" value="DPI" checked>
+                            <label class="btn btn-outline-teal" for="cajaTipoDpi"><i class="fas fa-id-card me-1"></i> Por DPI</label>
+
+                            <input type="radio" class="btn-check" name="tipoBusquedaCaja" id="cajaTipoCita" value="CITA">
+                            <label class="btn btn-outline-teal" for="cajaTipoCita"><i class="fas fa-hashtag me-1"></i> Por No. Cita</label>
+                        </div>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-8">
+                                <input type="text" id="cajaInputBusqueda" class="form-control form-control-lg text-mono"
+                                       placeholder="DPI del paciente (13 dígitos)" maxlength="13" autocomplete="off">
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-accent btn-lg w-100" id="cajaBtnBuscar">
+                                    <span id="cajaBtnBuscarTexto"><i class="fas fa-magnifying-glass me-2"></i>Buscar</span>
+                                    <span id="cajaBtnBuscarSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="cajaResultadoBusqueda"></div>
+                </div>
+
+                <!-- ==================================================== -->
+                <!-- PASO 2: cobrar (pasos 2-8 del flujo normal / FA01)     -->
+                <!-- ==================================================== -->
+                <div id="vistaCobro" class="hh-card d-none d-print-none">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="hh-eyebrow-section">Cobro</span>
+                            <h2 class="hh-section-title mb-0">No. Cita <span id="cobroNoCita"></span></h2>
+                        </div>
+                        <button class="btn btn-link text-muted text-decoration-none" onclick="volverABusqueda()">
+                            <i class="fas fa-arrow-left me-1"></i>Buscar otra
+                        </button>
+                    </div>
+
+                    <div class="mb-3" id="cobroDetalleCita"></div>
+
+                    <div class="d-flex justify-content-between align-items-center p-3 mb-4"
+                         style="background: var(--color-primary-50); border-radius: var(--radius-md);">
+                        <span class="fw-semibold">Monto a cobrar</span>
+                        <span class="text-mono fw-bold" style="font-size:1.5rem; color: var(--color-primary-700);" id="cobroMonto">Q0.00</span>
+                    </div>
+
+                    <div id="cobroAlerta" class="alert alert-danger d-none"></div>
+
+                    <label class="form-label">Método de pago</label>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Efectivo" onclick="seleccionarMetodo(this)">
+                                <i class="fas fa-money-bill-wave d-block mb-1"></i>Efectivo
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Visa" onclick="seleccionarMetodo(this)">
+                                <i class="fa-brands fa-cc-visa d-block mb-1"></i>Visa
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Mastercard" onclick="seleccionarMetodo(this)">
+                                <i class="fa-brands fa-cc-mastercard d-block mb-1"></i>Mastercard
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="selection-card text-center" data-metodo="Débito" onclick="seleccionarMetodo(this)">
+                                <i class="fas fa-credit-card d-block mb-1"></i>Débito
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flujo normal, pasos 5-7: Efectivo -->
+                    <div id="camposEfectivo" class="d-none mb-3">
+                        <label class="form-label">Monto Recibido</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Q</span>
+                            <input type="number" step="0.01" min="0" class="form-control text-mono" id="montoRecibido" placeholder="0.00">
+                        </div>
+                        <div class="small text-muted mt-1" id="cambioPreview"></div>
+                    </div>
+
+                    <!-- FA01: tarjeta -->
+                    <div id="camposTarjeta" class="d-none mb-3">
+                        <label class="form-label">Últimos 4 dígitos de la tarjeta</label>
+                        <input type="text" class="form-control text-mono" id="tarjetaUltimos4" maxlength="4" placeholder="0000">
+                        <p class="text-muted small mt-2 mb-0">
+                            <i class="fas fa-flask me-1"></i>Modo de prueba: cualquier número aprueba el pago.
+                            Termina en <strong>0002</strong>, <strong>0003</strong> o <strong>0004</strong> para simular un rechazo (FA04).
+                        </p>
+                    </div>
+
+                    <button class="btn btn-accent btn-lg w-100" id="btnRegistrarPago" disabled onclick="registrarPago()">
+                        <span id="btnRegistrarPagoTexto"><i class="fas fa-cash-register me-2"></i>Registrar Pago</span>
+                        <span id="btnRegistrarPagoSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                    </button>
+                </div>
+
+                <!-- ==================================================== -->
+                <!-- PASO 9-10: comprobante (componente PaymentReceipt)     -->
+                <!-- ==================================================== -->
+                <div id="vistaComprobante" class="hh-card text-center d-none">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center d-print-none"
+                         style="width:72px; height:72px; border-radius:50%; background: var(--color-success-bg);">
+                        <i class="fas fa-circle-check fa-2x" style="color: var(--color-success);"></i>
+                    </div>
+                    <h1 class="hh-section-title">Comprobante de Pago</h1>
+                    <p class="text-muted mb-4" id="comprobanteMensaje"></p>
+
+                    <div class="text-start" id="detalleComprobanteCaja"></div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4 d-print-none">
+                        <button class="btn btn-outline-teal btn-lg flex-fill" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>Imprimir
+                        </button>
+                        <button class="btn btn-teal btn-lg flex-fill" onclick="nuevoCobro()">
+                            <i class="fas fa-rotate-right me-2"></i>Nuevo Cobro
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/caja.js}"></script>
+
+</body>
+</html>

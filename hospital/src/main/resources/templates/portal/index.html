@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1">
+
+    <section class="hh-hero">
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <span class="eyebrow"><i class="fas fa-shield-heart"></i> Atención médica confiable</span>
+                    <h1>Tu salud, atendida con <em style="font-style: italic;">calma y precisión</em>.</h1>
+                    <p class="lead">
+                        Agenda tu cita en minutos, elige a tu especialista y paga en línea de forma segura.
+                        HIS Hospital reúne tecnología clínica y trato humano en un solo lugar.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <button type="button" class="btn btn-accent btn-lg" data-bs-toggle="modal" data-bs-target="#modalVerificarDpi">
+                            <i class="fas fa-calendar-plus me-2"></i>Agendar una cita
+                        </button>
+                        <a href="/servicios" class="btn btn-outline-light btn-nav btn-lg">
+                            <i class="fas fa-stethoscope me-2"></i>Ver especialidades
+                        </a>
+                    </div>
+
+                    <div class="hh-trust-row">
+                        <div>
+                            <div class="stat-num" th:attr="data-count=${#lists.size(especialidades)}" th:text="${#lists.size(especialidades)}">5</div>
+                            <div class="stat-label">Especialidades médicas</div>
+                        </div>
+                        <div>
+                            <div class="stat-num" th:attr="data-count=${#lists.size(sedes)}" th:text="${#lists.size(sedes)}">3</div>
+                            <div class="stat-label">Sedes a tu servicio</div>
+                        </div>
+                        <div>
+                            <div class="stat-num">24/7</div>
+                            <div class="stat-label">Atención de emergencias</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block">
+                    <div class="hh-hero-panel">
+                        <h4>Tu cita en 3 pasos</h4>
+                        <p class="panel-sub">Rápido, claro y sin filas.</p>
+                        <div class="panel-step">
+                            <div class="panel-num">1</div>
+                            <div><strong>Elige sede y especialidad</strong><span>Encuentra al médico indicado.</span></div>
+                        </div>
+                        <div class="panel-step">
+                            <div class="panel-num">2</div>
+                            <div><strong>Escoge tu horario</strong><span>Solo verás espacios disponibles.</span></div>
+                        </div>
+                        <div class="panel-step">
+                            <div class="panel-num">3</div>
+                            <div><strong>Paga en línea</strong><span>Recibe tu comprobante al instante.</span></div>
+                        </div>
+                        <div class="panel-foot"><i class="fas fa-lock"></i> Pago y datos protegidos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firma visual: línea de pulso cardiaco, se dibuja al cargar la página -->
+        <svg class="hh-pulse-line" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0,45 L220,45 L255,45 L275,15 L300,75 L325,45 L360,45 L1200,45" />
+        </svg>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SERVICIOS DESTACADOS                                          -->
+    <!-- ============================================================ -->
+    <section class="hh-section">
+        <div class="container">
+            <span class="hh-eyebrow-section">Lo que ofrecemos</span>
+            <h2 class="hh-section-title">Todo tu cuidado, en un solo flujo</h2>
+            <p class="hh-section-desc mb-5">Desde agendar la cita hasta salir con tu receta, cada paso está pensado para no hacerte perder tiempo.</p>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="hh-card hh-reveal">
+                        <div class="icon-badge"><i class="fas fa-calendar-check"></i></div>
+                        <h3>Agendamiento en línea</h3>
+                        <p>Elige sede, especialidad, médico y horario en un solo flujo guiado. Sin llamadas, sin filas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="hh-card hh-reveal">
+                        <div class="icon-badge"><i class="fas fa-credit-card"></i></div>
+                        <h3>Pago en línea seguro</h3>
+                        <p>Paga tu consulta con tarjeta al momento de agendar y recibe tu comprobante al instante.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="hh-card hh-reveal">
+                        <div class="icon-badge"><i class="fas fa-user-doctor"></i></div>
+                        <h3>Especialistas certificados</h3>
+                        <p>Médicos organizados por sede y especialidad, para que encuentres al indicado más rápido.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ESPECIALIDADES                                                -->
+    <!-- ============================================================ -->
+    <section class="hh-section-tight" style="background: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+        <div class="container">
+            <span class="hh-eyebrow-section">Especialidades</span>
+            <h2 class="hh-section-title mb-4">Encuentra al especialista que necesitas</h2>
+
+            <div class="row g-3">
+                <div class="col-6 col-md-3" th:each="esp : ${especialidades}">
+                    <div class="hh-card hh-reveal text-center py-4">
+                        <div class="icon-badge mx-auto">
+                            <i class="fas" th:classappend="${iconos.getOrDefault(#strings.toLowerCase(esp.nombre), 'fa-stethoscope')}"></i>
+                        </div>
+                        <h3 class="mb-0" th:text="${esp.nombre}">Especialidad</h3>
+                    </div>
+                </div>
+                <div class="col-12" th:if="${#lists.isEmpty(especialidades)}">
+                    <p class="text-center text-muted mb-0">Por el momento no hay especialidades disponibles.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- CÓMO FUNCIONA                                                 -->
+    <!-- ============================================================ -->
+    <section class="hh-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="hh-eyebrow-section">Cómo funciona</span>
+                <h2 class="hh-section-title">De la cita a la receta, sin complicaciones</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4"><div class="hh-card hh-step-card hh-reveal"><div class="step-bubble">1</div><h3>Verifica tu DPI</h3><p>Confirma tu registro o crea tu cuenta en segundos.</p></div></div>
+                <div class="col-md-4"><div class="hh-card hh-step-card hh-reveal"><div class="step-bubble">2</div><h3>Agenda y paga</h3><p>Elige sede, especialidad, médico y horario; paga en línea.</p></div></div>
+                <div class="col-md-4"><div class="hh-card hh-step-card hh-reveal"><div class="step-bubble">3</div><h3>Llega y sé atendido</h3><p>Preséntate en recepción: tu cita ya está lista.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- CTA FINAL                                                     -->
+    <!-- ============================================================ -->
+    <section class="hh-section">
+        <div class="container">
+            <div class="hh-card p-5 text-center" style="background: linear-gradient(135deg, var(--color-primary-50), var(--color-surface));">
+                <h2 class="hh-section-title">¿Listo para tu próxima consulta?</h2>
+                <p class="hh-section-desc mx-auto mb-4">Verifica tu DPI y en menos de 5 minutos tendrás tu cita agendada y pagada.</p>
+                <button type="button" class="btn btn-accent btn-lg" data-bs-toggle="modal" data-bs-target="#modalVerificarDpi">
+                    <i class="fas fa-calendar-plus me-2"></i>Comenzar ahora
+                </button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

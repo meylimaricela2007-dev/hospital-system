@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c366caf5-2a61-41c6-b8cf-d079f4d99e72" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="270" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.000001603882628" />
+      <entry key="MS500" value="1.0693480920042404" />
+      <entry key="S2" value="1.513166891945212" />
+      <entry key="S5" value="1.7657790204577395" />
+      <entry key="S10" value="1.8752972462228015" />
+      <entry key="S30" value="2.0507309419062723" />
+      <entry key="S60" value="2.4121295451997185" />
+      <entry key="M2" value="2.920736494631894" />
+      <entry key="M5" value="3.469047112630295" />
+      <entry key="M10" value="3.71445250313353" />
+      <entry key="M15" value="3.80486832766455" />
+      <entry key="M30" value="3.8999709695583302" />
+      <entry key="H1" value="3.951972187962214" />
+      <entry key="H2" value="4.076879849133396" />
+      <entry key="H4" value="4.627104003038054" />
+      <entry key="D1" value="6.9450018190852" />
+      <entry key="W1" value="7.828899808832567" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="1.33314E-319" />
+      <entry key="S60" value="3.6511776071430165E-160" />
+      <entry key="M2" value="1.9108054864750143E-80" />
+      <entry key="M5" value="1.2956466958405636E-32" />
+      <entry key="M10" value="1.1382647740488868E-16" />
+      <entry key="M15" value="2.3487071179225114E-11" />
+      <entry key="M30" value="4.846346167910947E-6" />
+      <entry key="H1" value="0.0022014418384120327" />
+      <entry key="H2" value="0.04691952512986499" />
+      <entry key="H4" value="0.2166091529226431" />
+      <entry key="D1" value="0.7749603222719069" />
+      <entry key="W1" value="0.9642347546735266" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.6038826280045722E-6" />
+      <entry key="MS500" value="0.06985499594493516" />
+      <entry key="S2" value="0.6632153085499617" />
+      <entry key="S5" value="1.23404495561738" />
+      <entry key="S10" value="1.5595898953078753" />
+      <entry key="S30" value="1.9308998440565615" />
+      <entry key="S60" value="2.3484475699286547" />
+      <entry key="M2" value="2.887027238615234" />
+      <entry key="M5" value="3.4548424404672944" />
+      <entry key="M10" value="3.7071949723304702" />
+      <entry key="M15" value="3.799992276493536" />
+      <entry key="M30" value="3.897518064459776" />
+      <entry key="H1" value="3.952938110489686" />
+      <entry key="H2" value="4.123158188741345" />
+      <entry key="H4" value="4.843339250299294" />
+      <entry key="D1" value="7.719864511536126" />
+      <entry key="W1" value="8.793118742835235" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3KXlnejfCtFQXqC42t78nHox5Bo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.HospitalApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/DELL GP/Desktop/Progra2/hospital-app-main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "configurable.group.appearance",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="HospitalApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="hospital" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.sistema.hospital.HospitalApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.26222.65" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.26222.65" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c366caf5-2a61-41c6-b8cf-d079f4d99e72" name="Changes" comment="" />
+      <created>1791711961716</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1791711961716</updated>
+      <workItem from="1791711963005" duration="417000" />
+      <workItem from="1791862309463" duration="3872000" />
+      <workItem from="1791931543461" duration="3483000" />
+      <workItem from="1791935455342" duration="6002000" />
+      <workItem from="1792015662643" duration="1203000" />
+      <workItem from="1792017021068" duration="492000" />
+      <workItem from="1792017855870" duration="11941000" />
+      <workItem from="1792094812008" duration="14239000" />
+      <workItem from="1792154885370" duration="3166000" />
+      <workItem from="1792269516944" duration="1518000" />
+      <workItem from="1792473025309" duration="4033000" />
+      <workItem from="1792534083290" duration="5774000" />
+      <workItem from="1792620267362" duration="5099000" />
+      <workItem from="1792872207595" duration="6542000" />
+      <workItem from="1793477518740" duration="5477000" />
+      <workItem from="1793740353841" duration="1637000" />
+      <workItem from="1793836689907" duration="633000" />
+      <workItem from="1794263151195" duration="800000" />
+      <workItem from="1794264925098" duration="958000" />
+      <workItem from="1794520440111" duration="2354000" />
+      <workItem from="1794541083607" duration="1901000" />
+      <workItem from="1794654051323" duration="244000" />
+      <workItem from="1794662422481" duration="2365000" />
+      <workItem from="1794665441817" duration="1125000" />
+      <workItem from="1794950567431" duration="1181000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/hospital/src/main/java/com/sistema/hospital/repository/EspecialidadRepository.java</url>
+          <line>7</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/hospital/src/main/java/com/sistema/hospital/service/BitacoraInventarioService.java</url>
+          <line>190</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/hospital/src/main/java/com/sistema/hospital/service/CitaService.java</url>
+          <line>101</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

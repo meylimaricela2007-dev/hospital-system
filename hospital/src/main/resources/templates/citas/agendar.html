@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- citas.css tiene los estilos del wizard (calendario, franjas horarias, barra de
+     progreso) y solo se usa en esta página, por eso no está en el fragmento head. -->
+<link rel="stylesheet" th:href="@{/css/citas.css}">
+
+<main class="flex-grow-1 py-5" style="background: var(--color-bg);">
+    <div class="container wizard-shell">
+
+        <!-- CU-05, FA04: banner + datos ocultos cuando este wizard fue abierto
+             por un Recepcionista para agendar una cita walk-in a nombre de
+             otro paciente. citas.js lee los inputs ocultos de abajo. -->
+        <div class="alert alert-info d-flex align-items-center gap-2 mb-3" th:if="${idPacienteWalkIn != null}">
+            <i class="fas fa-user-nurse"></i>
+            <div>Agendando cita <strong>walk-in</strong> para el paciente
+                <strong th:text="${nombrePacienteWalkIn}">Paciente</strong> (CU-05, FA04).
+            </div>
+        </div>
+        <input type="hidden" id="idPacienteWalkIn" th:value="${idPacienteWalkIn}">
+
+        <!-- CU-12: cita de seguimiento. El médico llega desde "Evaluados"; el sistema
+             pre-carga paciente, médico, especialidad y sede a partir de la consulta
+             padre (citas.js llena el banner verde) y el médico elige el tipo de seguimiento. -->
+        <input type="hidden" id="idConsultaOrigen" th:value="${idConsultaOrigen}">
+        <div id="bannerSeguimiento" class="alert alert-success mb-3 d-none" th:if="${idConsultaOrigen != null}">
+            <div class="fw-semibold mb-2"><i class="fas fa-calendar-check me-2"></i>Cita de seguimiento — datos pre-cargados</div>
+            <div class="row g-1 small">
+                <div class="col-md-6">Paciente: <strong id="segPaciente">-</strong></div>
+                <div class="col-md-6">Médico: <strong id="segMedico">-</strong></div>
+                <div class="col-md-6">Especialidad: <strong id="segEspecialidad">-</strong></div>
+                <div class="col-md-6">Sede: <strong id="segSucursal">-</strong></div>
+            </div>
+        </div>
+        <div class="hh-card mb-3 d-none" id="bloqueTipoSeguimiento" th:if="${idConsultaOrigen != null}">
+            <label class="form-label">Tipo de seguimiento *</label>
+            <select id="idTipoSeguimiento" class="form-select"><option value="">Cargando...</option></select>
+        </div>
+
+        <div class="text-center mb-4">
+            <span class="hh-eyebrow-section">Agendar cita</span>
+            <h1 class="hh-section-title">Reserva tu consulta en 5 pasos</h1>
+        </div>
+
+        <div class="wizard-card">
+
+            <!-- ==================================================== -->
+            <!-- BARRA DE PROGRESO                                     -->
+            <!-- ==================================================== -->
+            <div class="steps-progress">
+                <div class="step-item" data-step="1">
+                    <div class="step-circle active">1</div>
+                    <div class="step-label active">Sede</div>
+                </div>
+                <div class="step-item" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Especialidad</div>
+                </div>
+                <div class="step-item" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Médico</div>
+                </div>
+                <div class="step-item" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Horario</div>
+                </div>
+                <div class="step-item" data-step="5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Confirmar</div>
+                </div>
+            </div>
+
+            <div id="alertaGeneral" class="alert alert-danger d-none"></div>
+            <div id="alertaExito" class="alert alert-success d-none" role="status"></div>
+
+            <!-- ==================================================== -->
+            <!-- PASO 1: SEDE                                          -->
+            <!-- ==================================================== -->
+            <div class="step-content active" data-step-content="1">
+                <h2 class="step-title">¿En qué sede te atenderemos?</h2>
+                <p class="step-subtitle">Elige la sucursal más cercana a ti.</p>
+                <div id="sucursalesList"></div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- PASO 2: ESPECIALIDAD                                  -->
+            <!-- ==================================================== -->
+            <div class="step-content" data-step-content="2">
+                <h2 class="step-title">¿Qué especialidad necesitas?</h2>
+                <p class="step-subtitle">
+                    Sede seleccionada: <strong id="sucursalNombreDisplay" class="text-mono"></strong>
+                </p>
+                <div id="especialidadesList"></div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- PASO 3: MÉDICO                                        -->
+            <!-- ==================================================== -->
+            <div class="step-content" data-step-content="3">
+                <h2 class="step-title">Elige a tu médico</h2>
+                <p class="step-subtitle">
+                    Especialidad: <strong id="especialidadNombreDisplay" class="text-mono"></strong>
+                </p>
+                <div id="medicosList"></div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- PASO 4: FECHA Y HORA                                  -->
+            <!-- ==================================================== -->
+            <div class="step-content" data-step-content="4">
+                <h2 class="step-title">Elige fecha y hora</h2>
+                <p class="step-subtitle">
+                    Médico: <strong id="medicoNombreDisplay" class="text-mono"></strong>
+                </p>
+                <div id="calendarioContainer"></div>
+                <div id="horariosContainer" class="mt-4" style="display:none;">
+                    <label class="form-label">Horarios disponibles</label>
+                    <div id="horariosList"></div>
+                </div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- PASO 5: MOTIVO Y CONFIRMACIÓN                         -->
+            <!-- ==================================================== -->
+            <div class="step-content" data-step-content="5">
+                <h2 class="step-title">Cuéntanos el motivo de tu visita</h2>
+                <p class="step-subtitle">Mínimo 10 caracteres, máximo 2000.</p>
+
+                <textarea class="form-control mb-1" id="motivoConsulta" rows="3"
+                          placeholder="Ej. Dolor de cabeza persistente desde hace 3 días..."></textarea>
+                <div class="d-flex justify-content-between">
+                    <small id="motivoError" class="text-danger" style="display:none;">
+                        El motivo debe tener entre 10 y 2000 caracteres.
+                    </small>
+                    <small class="text-muted ms-auto text-mono"><span id="motivoContador">0</span>/2000</small>
+                </div>
+
+                <div class="mt-3 d-none" id="bloquePrioridad" th:if="${idConsultaOrigen != null}">
+                    <label class="form-label">Prioridad del seguimiento</label>
+                    <select id="idPrioridad" class="form-select"></select>
+                </div>
+
+                <hr class="my-4">
+
+                <h3 class="mb-3" style="font-size: 1.1rem;">Resumen de tu cita</h3>
+                <div class="resumen-fila"><span class="etiqueta">Sede</span><span class="valor" id="resumenSucursal">-</span></div>
+                <div class="resumen-fila"><span class="etiqueta">Especialidad</span><span class="valor" id="resumenEspecialidad">-</span></div>
+                <div class="resumen-fila"><span class="etiqueta">Médico</span><span class="valor" id="resumenMedico">-</span></div>
+                <div class="resumen-fila"><span class="etiqueta">Fecha</span><span class="valor" id="resumenFecha">-</span></div>
+                <div class="resumen-fila"><span class="etiqueta">Hora</span><span class="valor" id="resumenHora">-</span></div>
+                <div class="resumen-fila d-none" id="filaResumenTipo"><span class="etiqueta">Tipo de seguimiento</span><span class="valor" id="resumenTipo">-</span></div>
+                <div class="resumen-fila"><span class="etiqueta">Monto a pagar</span><span class="valor text-mono" id="resumenMonto">-</span></div>
+            </div>
+
+            <!-- ==================================================== -->
+            <!-- NAVEGACIÓN DEL WIZARD                                 -->
+            <!-- ==================================================== -->
+            <div class="wizard-nav">
+                <button type="button" class="btn btn-outline-teal" id="btnPrev" disabled>
+                    <i class="fas fa-arrow-left me-2"></i>Anterior
+                </button>
+                <button type="button" class="btn btn-accent" id="btnNext">
+                    Siguiente <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/citas.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1 hh-auth-shell">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="hh-auth-card row g-0">
+                    <div class="col-lg-4 d-none d-lg-block">
+                        <div class="side-panel">
+                            <i class="fas fa-user-plus fa-2x mb-3" style="color: var(--color-accent-500);"></i>
+                            <h2>Crea tu cuenta</h2>
+                            <p>En menos de dos minutos tendrás acceso para agendar citas, ver tu historial y pagar en línea.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="form-panel">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h2 class="mb-1">Registro de paciente</h2>
+                                <!-- FA01: "Volver al portal" pide confirmación antes de descartar los datos -->
+                                <a href="#" class="text-muted small text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalConfirmarSalida">
+                                    <i class="fas fa-xmark me-1"></i>Volver al portal
+                                </a>
+                            </div>
+                            <p class="text-muted mb-4">Todos los campos son obligatorios, excepto el número de seguro médico.</p>
+
+                            <div id="registroError" class="alert alert-danger d-none" role="alert"></div>
+                            <div id="registroExito" class="alert alert-success d-none" role="alert"></div>
+
+                            <!-- El orden de los campos sigue el flujo normal básico del documento:
+                                 nombre -> DPI -> NIT -> teléfono -> seguro (opcional) -> correo -> usuario -> contraseña -->
+                            <form id="registroForm" novalidate>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Nombre completo</label>
+                                        <input type="text" class="form-control" id="nombreCompleto" minlength="10" maxlength="100" required>
+                                        <div class="invalid-feedback" data-error-for="nombreCompleto"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">DPI (13 dígitos)</label>
+                                        <input type="text" class="form-control text-mono" id="dpi" maxlength="13" required>
+                                        <div class="invalid-feedback" data-error-for="dpi"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">NIT</label>
+                                        <input type="text" class="form-control" id="nit" maxlength="10" required>
+                                        <div class="invalid-feedback" data-error-for="nit"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Teléfono (8 dígitos)</label>
+                                        <input type="text" class="form-control text-mono" id="telefono" maxlength="8" required>
+                                        <div class="invalid-feedback" data-error-for="telefono"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Número de afiliado de seguro <span class="text-muted fw-normal">(opcional)</span></label>
+                                        <input type="text" class="form-control" id="numeroSeguro" maxlength="50">
+                                        <div class="invalid-feedback" data-error-for="numeroSeguro"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Correo electrónico</label>
+                                        <input type="email" class="form-control" id="correoElectronico" required>
+                                        <div class="invalid-feedback" data-error-for="correoElectronico"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nombre de usuario <span class="text-muted fw-normal">(8-9 caracteres)</span></label>
+                                        <input type="text" class="form-control" id="nombreUsuario" minlength="8" maxlength="9" required>
+                                        <div class="invalid-feedback" data-error-for="nombreUsuario"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Contraseña <span class="text-muted fw-normal">(mínimo 9 caracteres)</span></label>
+                                        <input type="password" class="form-control" id="contrasena" minlength="9" required>
+                                        <div class="invalid-feedback" data-error-for="contrasena"></div>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <button type="submit" class="btn btn-accent btn-lg w-100" id="btnRegistrar">
+                                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <p class="text-center text-muted small mt-4 mb-0">
+                                ¿Ya tienes cuenta? <a href="/login" class="fw-semibold">Inicia sesión</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ======================================================== -->
+<!-- FA01: confirmar antes de descartar el formulario           -->
+<!-- ======================================================== -->
+<div class="modal fade" id="modalConfirmarSalida" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: var(--radius-lg); border: none;">
+            <div class="modal-body p-4 text-center">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                     style="width:64px; height:64px; border-radius:50%; background: var(--color-warning-bg);">
+                    <i class="fas fa-circle-question fa-2x" style="color: var(--color-warning);"></i>
+                </div>
+                <h5 class="mb-2">¿Deseas salir del registro?</h5>
+                <p class="text-muted mb-0">Los datos que ingresaste se perderán y volverás al portal.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-link text-primary text-decoration-none" data-bs-dismiss="modal">
+                    Seguir registrándome
+                </button>
+                <a href="/" class="btn btn-teal"><i class="fas fa-house me-2"></i>Volver al portal</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:inline="javascript">
+    // El DPI llega precargado desde CU-00 (FA03: "no registrado" -> redirige aquí).
+    const dpiPrecargado = /*[[${dpiPrecargado}]]*/ null;
+    if (dpiPrecargado) {
+        document.getElementById('dpi').value = dpiPrecargado;
+    }
+</script>
+<script th:src="@{/js/registro.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1">
+    <section class="hh-section-tight">
+        <div class="container">
+            <span class="hh-eyebrow-section">Panel interno</span>
+            <h1 class="hh-section-title" th:text="'Hola, ' + ${usuarioSesion.nombreCompleto}">Hola</h1>
+            <p class="hh-section-desc mb-4">
+                Rol: <strong th:text="${usuarioSesion.rolNombre}">Rol</strong>
+            </p>
+
+            <!-- ====================================================================== -->
+            <!-- GRÁFICAS EN VIVO (solo Administrador): salen de la base de datos y se    -->
+            <!-- redibujan solas cuando un registro cambia                               -->
+            <!-- ====================================================================== -->
+            <div th:if="${usuarioSesion.rolNombre == 'Administrador'}">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h5 mb-0">Panel de gráficas</h2>
+                        <span id="estadoGraficas" class="small text-muted">Leyendo la base de datos...</span>
+                    </div>
+                    <button type="button" class="btn btn-outline-teal btn-sm" id="btnActualizarGraficas">
+                        <i class="fas fa-rotate me-1"></i>Actualizar ahora
+                    </button>
+                </div>
+
+                <div id="avisoCambioGraficas" class="alert alert-success d-none" role="status">
+                    <i class="fas fa-circle-check me-2"></i>La base de datos cambió: las gráficas se actualizaron.
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-6">
+                        <div class="hh-card">
+                            <h3 class="h6">Top 10 de médicos con más consultas</h3>
+                            <div style="height: 320px;"><canvas id="graficaMedicos"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="hh-card">
+                            <h3 class="h6">Días de la semana con más demanda de consultas médicas</h3>
+                            <div style="height: 320px;"><canvas id="graficaDias"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="hh-card">
+                            <h3 class="h6">Fechas con más consultas médicas (top 7)</h3>
+                            <div style="height: 320px;"><canvas id="graficaFechas"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="hh-card">
+                            <h3 class="h6">Medicamentos más despachados (unidades)</h3>
+                            <div style="height: 320px;"><canvas id="graficaMedicamentos"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="hh-card">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                                <h3 class="h6 mb-0">Pagos aprobados por método de pago</h3>
+                                <span class="badge text-bg-light">Total de pagos: <span id="totalMetodos">0</span></span>
+                            </div>
+                            <div style="height: 300px;"><canvas id="graficaMetodos"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resto de roles -->
+            <div class="hh-card p-4 p-lg-5" style="background: linear-gradient(135deg, var(--color-primary-50), var(--color-surface));"
+                 th:if="${usuarioSesion.rolNombre != 'Administrador' && (usuarioSesion.rolNombre == 'Recepcionista' || usuarioSesion.rolNombre == 'Cajero' || usuarioSesion.rolNombre == 'Enfermería' || usuarioSesion.rolNombre == 'Médico' || usuarioSesion.rolNombre == 'Laboratorista' || usuarioSesion.rolNombre == 'Farmacéutico')}">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="icon-badge flex-shrink-0 mb-0"><i class="fas fa-circle-info"></i></div>
+                    <div>
+                        <h3 class="mb-1">Bienvenido al panel interno</h3>
+                        <p class="mb-0">Elija un módulo en el menú de la izquierda para comenzar a trabajar.
+                            En celular, ábralo con el botón <strong>Menú</strong> de la esquina inferior.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hh-card" th:if="${usuarioSesion.rolNombre != 'Administrador' && usuarioSesion.rolNombre != 'Recepcionista' && usuarioSesion.rolNombre != 'Cajero' && usuarioSesion.rolNombre != 'Enfermería' && usuarioSesion.rolNombre != 'Médico' && usuarioSesion.rolNombre != 'Laboratorista' && usuarioSesion.rolNombre != 'Farmacéutico'}">
+                <div class="icon-badge"><i class="fas fa-hourglass-half"></i></div>
+                <h3>Próximamente</h3>
+                <p class="mb-0">El módulo para el rol <strong th:text="${usuarioSesion.rolNombre}"></strong> todavía está en construcción.</p>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/dashboard-graficas.js}"></script>
+</body>
+</html>

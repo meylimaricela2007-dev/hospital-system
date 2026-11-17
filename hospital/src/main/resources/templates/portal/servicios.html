@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1">
+
+    <section class="hh-hero" style="padding: 3.5rem 0 4.5rem;">
+        <div class="container position-relative" style="z-index: 2;">
+            <span class="eyebrow"><i class="fas fa-stethoscope"></i> Especialidades y servicios</span>
+            <h1 style="font-size: clamp(2rem, 4vw, 2.8rem);">Atención especializada, en cada sede</h1>
+            <p class="lead mb-0">Conoce las especialidades disponibles y qué esperar en cada consulta.</p>
+        </div>
+        <svg class="hh-pulse-line" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0,45 L500,45 L530,45 L550,10 L575,80 L600,45 L1200,45" />
+        </svg>
+    </section>
+
+    <section class="hh-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-6" th:each="esp : ${especialidades}">
+                    <div class="hh-card hh-reveal h-100">
+                        <div class="icon-badge">
+                            <i class="fas"
+                               th:classappend="${iconos.getOrDefault(#strings.toLowerCase(esp.nombre), 'fa-stethoscope')}"></i>
+                        </div>
+                        <h3 th:text="${esp.nombre}">Especialidad</h3>
+                        <p th:text="${esp.descripcion != null ? esp.descripcion : 'Atención médica especializada.'}">Descripción</p>
+                    </div>
+                </div>
+                <div class="col-12" th:if="${#lists.isEmpty(especialidades)}">
+                    <p class="text-center text-muted">Por el momento no hay especialidades disponibles.</p>
+                </div>
+            </div>
+
+            </div>
+
+            <div class="hh-card p-5 text-center mt-5" style="background: linear-gradient(135deg, var(--color-primary-50), var(--color-surface));">
+                <h2 class="hh-section-title">¿Ya sabes qué especialidad necesitas?</h2>
+                <p class="hh-section-desc mx-auto mb-4">Agenda tu cita en línea y elige el horario que mejor te convenga.</p>
+                <button type="button" class="btn btn-accent btn-lg" data-bs-toggle="modal" data-bs-target="#modalVerificarDpi">
+                    <i class="fas fa-calendar-plus me-2"></i>Agendar cita
+                </button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+
+        <div class="mb-4">
+            <span class="hh-eyebrow-section">Panel interno · CU-14</span>
+            <h1 class="hh-section-title mb-0">Catálogos del Sistema</h1>
+            <p class="hh-section-desc">Datos maestros que usan las citas, el laboratorio y la farmacia.</p>
+        </div>
+
+        <div id="alertaError" class="alert alert-danger d-none"></div>
+
+        <div class="row g-4" id="contenedorCatalogos"></div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/catalogos.js}"></script>
+
+</body>
+</html>

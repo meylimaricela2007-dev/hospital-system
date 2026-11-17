@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<link rel="stylesheet" th:href="@{/css/citas.css}">
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+        <input type="hidden" id="despIdReceta" th:value="${idReceta}">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+            <div>
+                <span class="hh-eyebrow-section">Panel interno · CU-11</span>
+                <h1 class="hh-section-title mb-0">Despacho de la Receta <span class="text-mono" id="despTituloReceta">…</span></h1>
+            </div>
+            <a href="/farmacia/despacho" class="btn btn-outline-teal"><i class="fas fa-arrow-left me-2"></i>Volver</a>
+        </div>
+
+        <div id="despAlertaGeneral" class="alert d-none"></div>
+
+        <!-- ============ Formulario de despacho (pasos 4-9) ============ -->
+        <div id="despFormulario" class="d-none">
+            <div class="hh-card mb-4">
+                <div class="resumen-fila"><span class="etiqueta">Paciente</span><span class="valor" id="despPaciente"></span></div>
+                <div class="resumen-fila"><span class="etiqueta">Fecha de emisión</span><span class="valor" id="despFecha"></span></div>
+                <div class="resumen-fila"><span class="etiqueta">Sucursal</span><span class="valor" id="despSucursal"></span></div>
+                <div class="resumen-fila"><span class="etiqueta">Notas de la receta</span><span class="valor" id="despNotas"></span></div>
+            </div>
+
+            <!-- FA01: alertas de stock bajo -->
+            <div id="despAlertasStock" class="d-none mb-4"></div>
+
+            <div class="hh-card p-0 mb-4">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                        <tr style="background: var(--color-primary-50);">
+                            <th class="ps-4">Medicamento</th>
+                            <th>Dosis</th>
+                            <th class="text-center">Recetado</th>
+                            <th>Disponibilidad</th>
+                            <th style="width:120px;">Cantidad</th>
+                            <th class="text-end">Precio</th>
+                            <th class="text-end pe-4">Subtotal</th>
+                        </tr>
+                        </thead>
+                        <tbody id="cuerpoItems"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="hh-card mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">El cobro físico se realiza fuera del sistema (efectivo, tarjeta u otro medio).</div>
+                    <div class="text-mono fw-bold" style="font-size:1.4rem; color: var(--color-primary-700);" id="despTotal">Total del Despacho: Q0.00.</div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                <!-- FA03 -->
+                <button class="btn btn-outline-teal" id="btnCancelarDespacho"><i class="fas fa-ban me-2"></i>Cancelar despacho</button>
+                <button class="btn btn-accent btn-lg" id="btnConfirmarDespacho"><i class="fas fa-check me-2"></i>Confirmar Despacho</button>
+            </div>
+        </div>
+
+        <!-- ============ Resumen del despacho (pasos 11-13) ============ -->
+        <div id="despResumen" class="d-none">
+            <div class="hh-card mb-4">
+                <span class="hh-eyebrow-section">Despacho <span class="text-mono" id="resIdDespacho"></span></span>
+                <h2 class="mb-3" style="font-size:1.3rem;" id="resPaciente"></h2>
+                <div id="resLineas"></div>
+                <div class="resumen-fila"><span class="etiqueta fw-bold">Monto total</span><span class="valor text-mono" id="resTotal"></span></div>
+            </div>
+            <div id="resSustituciones" class="mb-3"></div>
+            <div id="resAlertasMinimo" class="mb-3"></div>
+            <div class="d-flex gap-2 justify-content-end">
+                <a href="/farmacia" class="btn btn-outline-teal">Ir al panel</a>
+                <a href="/farmacia/despacho" class="btn btn-accent">Nuevo Despacho</a>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<!-- FA03: confirmar cancelación -->
+<div class="modal fade" id="modalCancelarDespacho" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: var(--radius-lg); border: none;">
+            <div class="modal-body p-4 text-center">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                     style="width:64px; height:64px; border-radius:50%; background: var(--color-warning-bg);">
+                    <i class="fas fa-triangle-exclamation fa-2x" style="color: var(--color-warning);"></i>
+                </div>
+                <h5 class="mb-2">Cancelar despacho</h5>
+                <p class="text-muted mb-0">Se registrará que el paciente no adquirió los medicamentos recetados en farmacia interna.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-link text-primary text-decoration-none" data-bs-dismiss="modal">Seguir despachando</button>
+                <button type="button" class="btn" style="background: var(--color-danger); color:#fff;" id="btnConfirmarCancelacion">
+                    Sí, cancelar despacho
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/farmacia-despacho.js}"></script>
+
+</body>
+</html>

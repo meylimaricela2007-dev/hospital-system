@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1 hh-auth-shell">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="hh-auth-card">
+                    <div class="form-panel">
+                        <div class="text-center mb-4">
+                            <div class="icon-badge mx-auto mb-2" style="width: 56px; height: 56px; font-size: 1.4rem;">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <h2 class="mb-1">Acceso de personal</h2>
+                            <p class="text-muted small">Exclusivo para personal interno del hospital.</p>
+                        </div>
+
+                        <div id="loginError" class="alert alert-danger d-none" role="alert"></div>
+
+                        <form id="loginAdminForm" novalidate>
+                            <div class="mb-3">
+                                <label class="form-label">Usuario</label>
+                                <input type="text" class="form-control form-control-lg" id="username" autocomplete="username" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Contraseña</label>
+                                <input type="password" class="form-control form-control-lg" id="password" autocomplete="current-password" required>
+                            </div>
+                            <button type="submit" class="btn btn-teal btn-lg w-100" id="btnLogin">
+                                <i class="fas fa-right-to-bracket me-2"></i>Ingresar al panel
+                            </button>
+                        </form>
+
+                        <p class="text-center text-muted small mt-4 mb-0">
+                            ¿Eres paciente? <a href="/login" class="fw-semibold">Inicia sesión aquí</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    document.getElementById('loginAdminForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnLogin');
+        const errorBox = document.getElementById('loginError');
+        errorBox.classList.add('d-none');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Verificando...';
+
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value.trim(),
+            }),
+        })
+            .then((r) => r.json())
+            .then((data) => {
+                if (data.success) {
+                    window.location.href = '/admin/dashboard';
+                } else {
+                    errorBox.textContent = data.mensaje || 'Credenciales incorrectas.';
+                    errorBox.classList.remove('d-none');
+                }
+            })
+            .catch(() => {
+                errorBox.textContent = 'Error de conexión con el servidor.';
+                errorBox.classList.remove('d-none');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-right-to-bracket me-2"></i>Ingresar al panel';
+            });
+    });
+</script>
+
+</body>
+</html>

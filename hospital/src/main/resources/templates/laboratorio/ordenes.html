@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+
+        <div class="mb-4">
+            <span class="hh-eyebrow-section">Panel interno · CU-09</span>
+            <h1 class="hh-section-title mb-0">Órdenes de Laboratorio</h1>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- Filtros (paso 1): estado, paciente y médico            -->
+        <!-- ==================================================== -->
+        <div class="hh-card mb-4">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select id="labFiltroEstado" class="form-select">
+                        <option value="" selected>Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Paciente</label>
+                    <input type="text" id="labFiltroPaciente" class="form-control" placeholder="Nombre o DPI" maxlength="100">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Médico</label>
+                    <input type="text" id="labFiltroMedico" class="form-control" placeholder="Nombre del médico" maxlength="100">
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button class="btn btn-teal flex-grow-1" id="labBtnBuscar">
+                        <i class="fas fa-magnifying-glass me-1"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-teal" id="labBtnLimpiar" title="Limpiar filtros">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="labAlertaError" class="alert alert-danger d-none"></div>
+
+        <!-- ==================================================== -->
+        <!-- Tabla de órdenes                                       -->
+        <!-- ==================================================== -->
+        <div class="hh-card p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr style="background: var(--color-primary-50);">
+                        <th class="ps-4">No. Orden</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th class="text-center">Exámenes</th>
+                        <th class="text-end">Monto</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="labCuerpoTabla"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Paginación (10 / 25 / 50) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3">
+            <div class="d-flex align-items-center gap-2 small text-muted">
+                <span>Elementos por página</span>
+                <select id="labTamanoPagina" class="form-select form-select-sm" style="width: auto;">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+                <span id="labTextoConteo" class="ms-2"></span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-teal" id="labPaginaAnterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="labTextoPagina" class="small text-muted text-mono"></span>
+                <button class="btn btn-sm btn-outline-teal" id="labPaginaSiguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/laboratorio.js}"></script>
+
+</body>
+</html>

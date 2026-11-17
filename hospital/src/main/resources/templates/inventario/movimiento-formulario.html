@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <a href="/inventario" class="text-muted small text-decoration-none d-inline-block mb-3">
+                    <i class="fas fa-arrow-left me-1"></i> Volver a la bitácora
+                </a>
+
+                <div class="hh-card">
+                    <span class="hh-eyebrow-section">Panel interno · CU-15</span>
+                    <h1 class="hh-section-title">Nuevo Movimiento de Inventario</h1>
+                    <p class="hh-section-desc mb-4">
+                        Registra compras, devoluciones, ventas, reclamos y ajustes. El despacho de recetas se registra solo desde Farmacia.
+                    </p>
+
+                    <div id="alertaExito" class="alert alert-success d-none"></div>
+                    <div id="alertaAdvertencia" class="alert alert-warning d-none"></div>
+                    <div id="alertaError" class="alert alert-danger d-none"></div>
+
+                    <form id="formMovimiento" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="idMedicamento">Medicamento *</label>
+                                <select class="form-select" id="idMedicamento">
+                                    <option value="">-- Seleccione un medicamento --</option>
+                                </select>
+                                <div class="invalid-feedback" data-error-for="idMedicamento"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="idSucursal">Sucursal *</label>
+                                <select class="form-select" id="idSucursal">
+                                    <option value="">-- Seleccione una sucursal --</option>
+                                </select>
+                                <div class="invalid-feedback" data-error-for="idSucursal"></div>
+                            </div>
+
+                            <!-- Panel informativo en tiempo real (RN-CU13-03) -->
+                            <div class="col-12 d-none" id="panelInventario">
+                                <div class="p-3" style="background: var(--color-primary-50); border-radius: var(--radius-md);">
+                                    <div class="row text-center g-2">
+                                        <div class="col-6 col-md-3">
+                                            <div class="small text-muted">Stock actual</div>
+                                            <div class="h5 mb-0 text-mono" id="infoStockActual">—</div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="small text-muted">Stock mínimo</div>
+                                            <div class="h5 mb-0 text-mono" id="infoStockMinimo">—</div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="small text-muted">Stock proyectado</div>
+                                            <div class="h5 mb-0 text-mono" id="infoStockProyectado">—</div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="small text-muted">Operación</div>
+                                            <div class="h5 mb-0" id="infoOperacion">—</div>
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted text-center mt-2 d-none" id="infoSinInventario">
+                                        Este medicamento aún no tiene inventario en la sucursal. Una entrada lo creará.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="idTipoMovimiento">Tipo de movimiento *</label>
+                                <select class="form-select" id="idTipoMovimiento">
+                                    <option value="">-- Seleccione el tipo --</option>
+                                </select>
+                                <div class="invalid-feedback" data-error-for="idTipoMovimiento"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="cantidad">Cantidad *</label>
+                                <input type="number" class="form-control text-mono" id="cantidad" min="1" step="1" placeholder="0">
+                                <div class="invalid-feedback" data-error-for="cantidad"></div>
+                            </div>
+
+                            <div class="col-md-6 d-none" id="grupoCosto">
+                                <label class="form-label" for="costoUnitario">Costo unitario (Q) *</label>
+                                <input type="number" class="form-control text-mono" id="costoUnitario" min="0.01" step="0.01" placeholder="0.00">
+                                <div class="invalid-feedback" data-error-for="costoUnitario"></div>
+                            </div>
+                            <div class="col-md-6 d-none" id="grupoReferencia">
+                                <label class="form-label" for="numeroReferencia" id="etiquetaReferencia">Número de referencia</label>
+                                <input type="text" class="form-control text-mono" id="numeroReferencia" maxlength="100">
+                                <div class="invalid-feedback" data-error-for="numeroReferencia"></div>
+                            </div>
+                            <div class="col-12 d-none" id="grupoMotivo">
+                                <label class="form-label" for="motivo" id="etiquetaMotivo">Notas</label>
+                                <textarea class="form-control" id="motivo" rows="3" maxlength="500"></textarea>
+                                <div class="invalid-feedback" data-error-for="motivo"></div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a href="/inventario" class="btn btn-outline-teal">Cancelar</a>
+                            <button type="submit" class="btn btn-accent" id="btnRegistrar">
+                                <i class="fas fa-check me-2"></i>Registrar Movimiento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/inventario-formulario.js}"></script>
+
+</body>
+</html>

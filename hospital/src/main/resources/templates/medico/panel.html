@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <main class="flex-grow-1 hh-section-tight">
+        <div class="container">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+                <div>
+                    <span class="hh-eyebrow-section">Panel interno · CU-08</span>
+                    <h1 class="hh-section-title mb-0">Consulta Médica</h1>
+                </div>
+                <a href="/medico/agenda" class="btn btn-outline-teal">
+                    <i class="fas fa-calendar-days me-2"></i>Agenda Médica
+                </a>
+            </div>
+
+            <div id="alertaGeneral" class="alert alert-success d-none"></div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h2 class="h5 d-flex align-items-center gap-2 mb-3">
+                        <i class="fas fa-chair"></i>En Espera de Consulta
+                        <span class="badge badge-soft-warning" id="contadorEspera">0</span>
+                    </h2>
+                    <div id="listaEspera"></div>
+                </div>
+
+                <div class="col-lg-4">
+                    <h2 class="h5 d-flex align-items-center gap-2 mb-3">
+                        <i class="fas fa-stethoscope"></i>En Consulta Médica
+                        <span class="badge badge-soft-info" id="contadorConsulta">0</span>
+                    </h2>
+                    <div id="listaConsulta"></div>
+                </div>
+
+                <div class="col-lg-4">
+                    <h2 class="h5 d-flex align-items-center gap-2 mb-3">
+                        <i class="fas fa-clipboard-check"></i>Evaluados — Pendiente de cierre
+                        <span class="badge badge-soft-success" id="contadorEvaluados">0</span>
+                    </h2>
+                    <div id="listaEvaluados"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Formulario de Consulta (pasos 3-9 del flujo normal)    -->
+<!-- ============================================================ -->
+<div class="modal fade" id="modalConsulta" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0" style="border-radius: var(--radius-lg); overflow: hidden;">
+            <div class="modal-header border-0" style="background: var(--color-primary-900); color: #fff;">
+                <div>
+                    <h5 class="modal-title fw-bold mb-0">Consulta Médica</h5>
+                    <div class="small opacity-75">
+                        Paciente: <strong id="consultaNombrePaciente"></strong>
+                        <span id="consultaBadgeEmergencia" class="badge badge-emergencia ms-1 d-none">EMERGENCIA</span>
+                        · No. Cita <span id="consultaNoCita"></span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="consultaAlertaError" class="alert alert-danger d-none"></div>
+
+                <form id="formConsulta" novalidate>
+                    <label class="form-label">Motivo de Visita *</label>
+                    <textarea class="form-control mb-3" id="motivoVisita" rows="2" maxlength="2000"></textarea>
+
+                    <label class="form-label">Hallazgos Clínicos</label>
+                    <textarea class="form-control mb-3" id="hallazgosClinicos" rows="2"></textarea>
+
+                    <label class="form-label">Código CIE-10 (diagnóstico)</label>
+                    <div class="position-relative mb-3">
+                        <input type="text" class="form-control text-mono" id="codigoCie10" autocomplete="off" placeholder="Escriba para buscar...">
+                        <div id="cie10Sugerencias" class="list-group position-absolute w-100" style="z-index: 20; max-height: 220px; overflow-y: auto;"></div>
+                    </div>
+
+                    <label class="form-label">Diagnóstico <span class="text-muted fw-normal">(obligatorio para finalizar)</span></label>
+                    <textarea class="form-control mb-3" id="diagnostico" rows="2"></textarea>
+
+                    <label class="form-label">Plan de Tratamiento</label>
+                    <textarea class="form-control mb-3" id="planTratamiento" rows="2"></textarea>
+
+                    <label class="form-label">Notas Adicionales</label>
+                    <textarea class="form-control mb-3" id="notasAdicionales" rows="2"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4 gap-2">
+                <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-outline-teal" id="btnGuardarEnCurso">
+                    <i class="fas fa-floppy-disk me-2"></i>Guardar (En curso)
+                </button>
+                <button type="button" class="btn btn-accent" id="btnFinalizarConsulta">
+                    <i class="fas fa-check-double me-2"></i>Finalizar Consulta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Orden de Laboratorio (FA01)                             -->
+<!-- ============================================================ -->
+<div class="modal fade" id="modalLaboratorio" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: var(--radius-lg); overflow: hidden;">
+            <div class="modal-header border-0" style="background: var(--color-primary-900); color: #fff;">
+                <h5 class="modal-title fw-bold"><i class="fas fa-flask me-2"></i>Orden de Laboratorio</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="labAlertaError" class="alert alert-danger d-none"></div>
+                <label class="form-label">Exámenes</label>
+                <div id="listaExamenes" class="mb-3"></div>
+                <label class="form-label">Observaciones</label>
+                <textarea class="form-control" id="labObservaciones" rows="2"></textarea>
+                <!-- CU-09, FA01: orden externa -->
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="labOrdenExterna">
+                    <label class="form-check-label" for="labOrdenExterna">
+                        Orden Externa <span class="small text-muted">(el paciente se hará los exámenes en un laboratorio externo)</span>
+                    </label>
+                </div>
+                <div class="text-end mt-2 fw-semibold">Total: <span id="labMontoTotal">Q0.00</span></div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-accent" id="btnGenerarOrdenLab">
+                    <i class="fas fa-flask me-2"></i>Generar Orden
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Receta Médica (FA04)                                    -->
+<!-- ============================================================ -->
+<div class="modal fade" id="modalReceta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0" style="border-radius: var(--radius-lg); overflow: hidden;">
+            <div class="modal-header border-0" style="background: var(--color-primary-900); color: #fff;">
+                <h5 class="modal-title fw-bold"><i class="fas fa-prescription me-2"></i>Receta Médica</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="recetaAlertaError" class="alert alert-danger d-none"></div>
+                <div id="listaMedicamentosReceta"></div>
+                <button type="button" class="btn btn-outline-teal btn-sm mt-2" id="btnAgregarMedicamento">
+                    <i class="fas fa-plus me-2"></i>Agregar medicamento
+                </button>
+                <label class="form-label mt-3">Notas generales</label>
+                <textarea class="form-control" id="recetaNotas" rows="2"></textarea>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-accent" id="btnGenerarReceta">
+                    <i class="fas fa-prescription me-2"></i>Generar Receta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/medico.js}"></script>
+
+</body>
+</html>

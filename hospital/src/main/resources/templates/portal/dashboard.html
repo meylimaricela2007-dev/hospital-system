@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1">
+    <section class="hh-section-tight">
+        <div class="container">
+            <span class="hh-eyebrow-section">Mi cuenta</span>
+            <h1 class="hh-section-title" th:text="'Hola, ' + ${usuarioSesion.nombreCompleto}">Hola</h1>
+            <p class="hh-section-desc mb-5">Desde aquí puedes agendar una nueva cita o revisar tus datos.</p>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="hh-card h-100">
+                        <div class="icon-badge"><i class="fas fa-calendar-plus"></i></div>
+                        <h3>Agendar una cita</h3>
+                        <p class="mb-3">Elige sede, especialidad, médico y horario, y paga en línea al instante.</p>
+                        <a href="/citas/agendar" class="btn btn-accent">
+                            <i class="fas fa-arrow-right me-2"></i>Agendar ahora
+                        </a>
+                    </div>
+                </div>
+                <!-- NUEVO: antes no existía ninguna forma de ver el historial de citas propio. -->
+                <div class="col-md-6">
+                    <div class="hh-card h-100">
+                        <div class="icon-badge"><i class="fas fa-calendar-check"></i></div>
+                        <h3>Mis citas</h3>
+                        <p class="mb-3">Revisa el estado de tus citas, próximas y pasadas.</p>
+                        <a href="/citas/mis-citas" class="btn btn-teal">
+                            <i class="fas fa-arrow-right me-2"></i>Ver mis citas
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="hh-card h-100">
+                        <div class="icon-badge"><i class="fas fa-id-badge"></i></div>
+                        <h3>Mis datos</h3>
+                        <p class="mb-1"><strong>Usuario:</strong> <span th:text="${usuarioSesion.nombreUsuario}"></span></p>
+                        <p class="mb-0"><strong>Rol:</strong> <span th:text="${usuarioSesion.rolNombre}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

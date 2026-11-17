@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Reutilizamos citas.css: trae .resumen-fila para el resumen de la orden. -->
+<link rel="stylesheet" th:href="@{/css/citas.css}">
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+
+                <!-- Valores que necesita laboratorio-detalle.js -->
+                <input type="hidden" id="labIdOrden" th:value="${idOrden}">
+                <input type="hidden" id="labPuedeEditar" th:value="${puedeEditar}">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+                    <div>
+                        <span class="hh-eyebrow-section">Panel interno · CU-09</span>
+                        <h1 class="hh-section-title mb-0">Orden <span class="text-mono" id="detNumeroOrden">…</span></h1>
+                    </div>
+                    <!-- Paso 14: "Volver" a la tabla de órdenes -->
+                    <a href="/laboratorio" class="btn btn-outline-teal">
+                        <i class="fas fa-arrow-left me-2"></i>Volver
+                    </a>
+                </div>
+
+                <div id="detAlertaGeneral" class="alert d-none"></div>
+
+                <!-- ==================================================== -->
+                <!-- Paso 3: resumen de la orden                            -->
+                <!-- ==================================================== -->
+                <div class="hh-card mb-4" id="detResumenCard">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                        <div>
+                            <span class="hh-eyebrow-section">Resumen</span>
+                            <div id="detBadges" class="mt-1"></div>
+                        </div>
+                        <div class="text-end">
+                            <div class="small text-muted">Monto total</div>
+                            <div class="text-mono fw-bold" style="font-size:1.5rem; color: var(--color-primary-700);" id="detMontoTotal">Q0.00</div>
+                        </div>
+                    </div>
+                    <div id="detResumen">
+                        <div class="text-center text-muted py-3">
+                            <span class="spinner-border spinner-border-sm me-2"></span>Cargando orden…
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 4-6 / RN-CU09-01: aviso de pago pendiente o de orden externa -->
+                <div id="detAvisoEstado" class="d-none mb-4"></div>
+
+                <!-- ==================================================== -->
+                <!-- Pasos 9-13: exámenes con su formulario de resultado    -->
+                <!-- ==================================================== -->
+                <div class="d-flex justify-content-between align-items-end mb-3">
+                    <div>
+                        <span class="hh-eyebrow-section">Exámenes</span>
+                        <h2 class="hh-section-title mb-0" style="font-size:1.5rem;">Resultados</h2>
+                    </div>
+                    <span class="small text-muted text-mono" id="detProgreso"></span>
+                </div>
+                <div id="detListaExamenes"></div>
+
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/laboratorio-detalle.js}"></script>
+
+</body>
+</html>

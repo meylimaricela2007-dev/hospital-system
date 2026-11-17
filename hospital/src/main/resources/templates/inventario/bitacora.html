@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+            <div>
+                <span class="hh-eyebrow-section">Panel interno · CU-15</span>
+                <h1 class="hh-section-title mb-0">Bitácora de Inventario</h1>
+            </div>
+            <a href="/inventario/nuevo" class="btn btn-accent btn-lg">
+                <i class="fas fa-plus me-2"></i>Nuevo Movimiento
+            </a>
+        </div>
+
+        <!-- Selector de mes para el resumen y las gráficas -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+            <h2 class="h5 mb-0">Resumen y gráficas del mes</h2>
+            <div class="d-flex align-items-center gap-2">
+                <label for="resumenMes" class="small text-muted mb-0">Mes</label>
+                <input type="month" id="resumenMes" class="form-control form-control-sm" style="width:auto;">
+            </div>
+        </div>
+
+        <!-- Resumen mensual (RN-CU13-03) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="hh-card h-100">
+                    <div class="small text-muted" id="resumenPeriodo">Resumen del mes</div>
+                    <div class="h3 mb-0 text-mono" id="resumenTotal">0</div>
+                    <div class="small text-muted">movimientos vigentes</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="hh-card h-100">
+                    <div class="small text-muted"><i class="fas fa-arrow-down me-1"></i>Unidades de entrada</div>
+                    <div class="h3 mb-0 text-mono" id="resumenEntradas">0</div>
+                    <div class="small text-muted">Compra, Devolución, Ajuste+</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="hh-card h-100">
+                    <div class="small text-muted"><i class="fas fa-arrow-up me-1"></i>Unidades de salida</div>
+                    <div class="h3 mb-0 text-mono" id="resumenSalidas">0</div>
+                    <div class="small text-muted">Venta, Reclamo, Ajuste-, Despacho</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficas del resumen mensual (datos calculados en BitacoraInventarioService.resumenMensual) -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+                <div class="hh-card">
+                    <h3 class="h6">Unidades por tipo de movimiento</h3>
+                    <div style="height: 260px;"><canvas id="graficaTipos"></canvas></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hh-card">
+                    <h3 class="h6">Entradas y salidas por día</h3>
+                    <div style="height: 260px;"><canvas id="graficaDias"></canvas></div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="hh-card">
+                    <h3 class="h6">Medicamentos con más salidas (top 5)</h3>
+                    <div id="sinDatosGraficas" class="text-muted small d-none">No hay movimientos en este mes para graficar.</div>
+                    <div style="height: 240px;"><canvas id="graficaTop"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros (paso 2) -->
+        <div class="hh-card mb-4">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Tipo de movimiento</label>
+                    <select id="filtroTipo" class="form-select"><option value="">Todos</option></select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Medicamento</label>
+                    <select id="filtroMedicamento" class="form-select"><option value="">Todos</option></select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Sucursal</label>
+                    <select id="filtroSucursal" class="form-select"><option value="">Todas</option></select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">No. de referencia</label>
+                    <input type="text" id="filtroReferencia" class="form-control text-mono" placeholder="Factura, DESP-...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" id="filtroUsuario" class="form-control" placeholder="Nombre o usuario">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" id="filtroDesde" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" id="filtroHasta" class="form-control">
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button class="btn btn-teal flex-grow-1" id="btnBuscar">
+                        <i class="fas fa-magnifying-glass me-1"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-teal" id="btnLimpiar" title="Limpiar filtros">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="alertaExito" class="alert alert-success d-none"></div>
+        <div id="alertaError" class="alert alert-danger d-none"></div>
+
+        <div class="hh-card p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr style="background: var(--color-primary-50);">
+                        <th class="ps-4">Tipo</th>
+                        <th>Medicamento</th>
+                        <th>Sucursal</th>
+                        <th class="text-end">Cantidad</th>
+                        <th class="text-end">Stock anterior</th>
+                        <th class="text-end">Stock nuevo</th>
+                        <th class="text-end">Costo</th>
+                        <th>Referencia</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3">
+            <div class="d-flex align-items-center gap-2 small text-muted">
+                <span>Elementos por página</span>
+                <select id="selectTamanoPagina" class="form-select form-select-sm" style="width: auto;">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+                <span id="textoConteo" class="ms-2"></span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-teal" id="btnPaginaAnterior"><i class="fas fa-chevron-left"></i></button>
+                <span id="textoPagina" class="small text-muted text-mono"></span>
+                <button class="btn btn-sm btn-outline-teal" id="btnPaginaSiguiente"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/inventario-bitacora.js}"></script>
+
+</body>
+</html>

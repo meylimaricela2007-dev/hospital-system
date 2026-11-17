@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+            <div>
+                <span class="hh-eyebrow-section">Mi cuenta</span>
+                <h1 class="hh-section-title mb-0">Mis Citas</h1>
+            </div>
+            <a href="/citas/agendar" class="btn btn-accent">
+                <i class="fas fa-calendar-plus me-2"></i>Agendar nueva cita
+            </a>
+        </div>
+
+        <div id="listaMisCitas">
+            <p class="text-muted">Cargando tus citas...</p>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/mis-citas.js}"></script>
+
+</body>
+</html>

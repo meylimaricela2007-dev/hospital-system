@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+            <div>
+                <span class="hh-eyebrow-section">Panel interno</span>
+                <h1 class="hh-section-title mb-0">Listado de Usuarios</h1>
+            </div>
+            <a href="/admin/usuarios/crear" class="btn btn-accent btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Crear Usuario
+            </a>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- Barra de filtro (paso 4 del flujo normal)              -->
+        <!-- ==================================================== -->
+        <div class="hh-card mb-4">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Filtrar por campo</label>
+                    <select id="selectCampoFiltro" class="form-select">
+                        <option value="ID">ID</option>
+                        <option value="Nombre" selected>Nombre</option>
+                        <option value="Correo Electrónico">Correo Electrónico</option>
+                        <option value="Rol">Rol</option>
+                        <option value="Nombre de Usuario">Nombre de Usuario</option>
+                        <option value="DPI">DPI</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" id="inputTextoFiltro" class="form-control" placeholder="Buscar...">
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button class="btn btn-teal flex-grow-1" id="btnBuscar">
+                        <i class="fas fa-magnifying-glass me-1"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-teal" id="btnLimpiar" title="Limpiar búsqueda">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensajes generales -->
+        <div id="alertaError" class="alert alert-danger d-none"></div>
+
+        <!-- ==================================================== -->
+        <!-- Tabla de usuarios (paso 7)                             -->
+        <!-- ==================================================== -->
+        <div class="hh-card p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr style="background: var(--color-primary-50);">
+                        <th class="ps-4">ID</th>
+                        <th>Nombre</th>
+                        <th>Correo Electrónico</th>
+                        <th>Rol</th>
+                        <th>Nombre de Usuario</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaUsuarios"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- Paginación configurable (10 / 25 / 50)                 -->
+        <!-- ==================================================== -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3">
+            <div class="d-flex align-items-center gap-2 small text-muted">
+                <span>Elementos por página</span>
+                <select id="selectTamanoPagina" class="form-select form-select-sm" style="width: auto;">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+                <span id="textoConteo" class="ms-2"></span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-teal" id="btnPaginaAnterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="textoPagina" class="small text-muted text-mono"></span>
+                <button class="btn btn-sm btn-outline-teal" id="btnPaginaSiguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<!-- ======================================================== -->
+<!-- DIÁLOGO MODAL: Confirmar eliminación (FA05)                -->
+<!-- ======================================================== -->
+<div class="modal fade" id="modalConfirmarEliminacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: var(--radius-lg); border: none;">
+            <div class="modal-body p-4 text-center">
+                <div class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                     style="width:64px; height:64px; border-radius:50%; background: var(--color-danger-bg);">
+                    <i class="fas fa-triangle-exclamation fa-2x" style="color: var(--color-danger);"></i>
+                </div>
+                <h5 class="mb-2">Confirmar eliminación</h5>
+                <p class="text-muted mb-0">
+                    ¿Está seguro que desea eliminar el usuario
+                    "<strong id="nombreUsuarioAEliminar" class="text-mono"></strong>"?
+                    <br>Esta acción no se puede deshacer.
+                </p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-link text-primary text-decoration-none" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn" style="background: var(--color-danger); color:#fff;" id="btnConfirmarEliminar">
+                    <i class="fas fa-trash me-2"></i>Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/usuarios.js}"></script>
+
+</body>
+</html>

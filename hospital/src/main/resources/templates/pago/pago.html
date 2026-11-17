@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- .resumen-fila (resumen y comprobante) está definida en citas.css -->
+<link rel="stylesheet" th:href="@{/css/citas.css}">
+
+<main class="flex-grow-1 hh-auth-shell">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+
+                <!-- ==================================================== -->
+                <!-- VISTA: formulario de pago (CU-04, pasos 1-8)          -->
+                <!-- ==================================================== -->
+                <div id="vistaFormulario" class="hh-card">
+                    <span class="hh-eyebrow-section">Pago en línea · CU-04</span>
+                    <h1 class="hh-section-title">Pago de Consulta</h1>
+
+                    <!-- Paso 1: temporizador regresivo de 5 minutos -->
+                    <div id="alertaTemporizador" class="alert alert-warning d-flex align-items-center gap-2">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span>Tiempo restante para completar el pago: <strong id="textoTemporizador" class="text-mono">5:00</strong></span>
+                    </div>
+
+                    <!-- Paso 1: resumen de la cita -->
+                    <div class="mb-4">
+                        <div class="resumen-fila"><span class="etiqueta">Médico</span><span class="valor" id="resMedico">-</span></div>
+                        <div class="resumen-fila"><span class="etiqueta">Especialidad</span><span class="valor" id="resEspecialidad">-</span></div>
+                        <div class="resumen-fila"><span class="etiqueta">Sede</span><span class="valor" id="resSede">-</span></div>
+                        <div class="resumen-fila"><span class="etiqueta">Fecha</span><span class="valor" id="resFecha">-</span></div>
+                        <div class="resumen-fila"><span class="etiqueta">Hora</span><span class="valor" id="resHora">-</span></div>
+                        <div class="resumen-fila"><span class="etiqueta">Total a pagar</span>
+                            <span class="valor text-mono" id="textoMonto" style="color: var(--color-primary-700); font-size: 1.15rem;">Q0.00</span></div>
+                    </div>
+
+                    <div id="alertaError" class="alert alert-danger d-none"></div>
+
+                    <!-- Paso 2: formulario "Datos de pago" -->
+                    <h2 class="h6 mb-3">Datos de pago</h2>
+                    <form id="formPago" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="tipoTarjeta">Tipo de tarjeta</label>
+                            <select class="form-select" id="tipoTarjeta">
+                                <option value="Visa">Visa (crédito)</option>
+                                <option value="Mastercard">Mastercard (crédito)</option>
+                                <option value="Débito">Débito</option>
+                            </select>
+                        </div>
+                        <!-- Paso 3: 13-19 dígitos, Luhn, se enmascara al perder el foco -->
+                        <div class="mb-3">
+                            <label class="form-label" for="numeroTarjeta">Número de tarjeta</label>
+                            <input type="text" class="form-control text-mono" id="numeroTarjeta" maxlength="19"
+                                   inputmode="numeric" autocomplete="off" placeholder="4242424242424242">
+                            <div class="invalid-feedback" data-error-for="numeroTarjeta"></div>
+                        </div>
+                        <!-- Paso 4: 5-100 caracteres, en mayúsculas -->
+                        <div class="mb-3">
+                            <label class="form-label" for="nombreTitular">Nombre del titular</label>
+                            <input type="text" class="form-control text-uppercase" id="nombreTitular" maxlength="100" autocomplete="off">
+                            <div class="invalid-feedback" data-error-for="nombreTitular"></div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <!-- Paso 5: MM/AA auto-formateado -->
+                            <div class="col-6">
+                                <label class="form-label" for="fechaVencimiento">Vencimiento (MM/AA)</label>
+                                <input type="text" class="form-control text-mono" id="fechaVencimiento" maxlength="5"
+                                       inputmode="numeric" autocomplete="off" placeholder="12/30">
+                                <div class="invalid-feedback" data-error-for="fechaVencimiento"></div>
+                            </div>
+                            <!-- Paso 6: CVV 3-4 dígitos, tipo password -->
+                            <div class="col-6">
+                                <label class="form-label" for="cvv">CVV</label>
+                                <input type="password" class="form-control text-mono" id="cvv" maxlength="4"
+                                       inputmode="numeric" autocomplete="off">
+                                <div class="invalid-feedback" data-error-for="cvv"></div>
+                            </div>
+                        </div>
+
+                        <p class="text-muted small mb-4">
+                            <i class="fas fa-shield-halved me-1"></i>Tu información de pago está protegida.
+                            El CVV nunca se almacena ni se envía.
+                        </p>
+
+                        <!-- Paso 7: botón "Pagar Q[monto]" -->
+                        <button type="submit" class="btn btn-accent btn-lg w-100" id="btnPagar">
+                            <i class="fas fa-lock me-2"></i>Pagar
+                        </button>
+                    </form>
+
+                    <p class="text-muted small mt-3 mb-0">
+                        <i class="fas fa-flask me-1"></i>Modo de prueba: cualquier tarjeta válida (Luhn) aprueba el pago.
+                        Termina en <strong>0002</strong> o <strong>0003</strong> (rechazo del banco),
+                        <strong>0004</strong> (error de comunicación) o <strong>0005</strong> (error de procesamiento).
+                    </p>
+                </div>
+
+                <!-- ==================================================== -->
+                <!-- VISTA: ¡Pago Exitoso! (pasos 13-15)                   -->
+                <!-- ==================================================== -->
+                <div id="vistaComprobante" class="hh-card text-center" style="display:none;">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                         style="width:72px; height:72px; border-radius:50%; background: var(--color-success-bg);">
+                        <i class="fas fa-circle-check fa-2x" style="color: var(--color-success);"></i>
+                    </div>
+                    <h1 class="hh-section-title">¡Pago Exitoso!</h1>
+                    <p class="mb-4" id="mensajeExito"></p>
+
+                    <div class="text-start" id="detalleComprobante"></div>
+
+                    <div class="alert alert-info text-start mt-4 mb-0">
+                        <i class="fas fa-envelope me-2"></i>Se ha enviado un correo de confirmación a tu correo electrónico registrado.
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+                        <a href="/dashboard" class="btn btn-outline-teal btn-lg flex-fill">
+                            <i class="fas fa-house me-2"></i>Volver al Portal
+                        </a>
+                        <a href="/citas/mis-citas" class="btn btn-teal btn-lg flex-fill">
+                            <i class="fas fa-calendar-check me-2"></i>Ver Mis Citas
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:inline="javascript">
+    const idCita = /*[[${idCita}]]*/ null;
+</script>
+<script th:src="@{/js/pago.js}"></script>
+
+</body>
+</html>

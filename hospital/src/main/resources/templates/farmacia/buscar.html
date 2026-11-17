@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+            <div>
+                <span class="hh-eyebrow-section">Panel interno · CU-11</span>
+                <h1 class="hh-section-title mb-0">Nuevo Despacho</h1>
+                <p class="hh-section-desc mb-0">Busca la receta del paciente. Solo se muestran recetas activas.</p>
+            </div>
+            <a href="/farmacia" class="btn btn-outline-teal"><i class="fas fa-arrow-left me-2"></i>Volver</a>
+        </div>
+
+        <!-- Paso 2: filtros por ID de Receta e ID de Consulta -->
+        <div class="hh-card mb-4">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">ID de Receta</label>
+                    <input type="text" id="filtroIdReceta" class="form-control text-mono" inputmode="numeric" placeholder="Ej. 1">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">ID de Consulta</label>
+                    <input type="text" id="filtroIdConsulta" class="form-control text-mono" inputmode="numeric" placeholder="Ej. 3">
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button class="btn btn-teal flex-grow-1" id="btnBuscar"><i class="fas fa-magnifying-glass me-1"></i> Buscar</button>
+                    <button class="btn btn-outline-teal" id="btnLimpiar" title="Limpiar búsqueda"><i class="fas fa-xmark"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="alertaError" class="alert alert-danger d-none"></div>
+
+        <div class="hh-card p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr style="background: var(--color-primary-50);">
+                        <th class="ps-4">ID</th>
+                        <th>Consulta</th>
+                        <th>Paciente</th>
+                        <th>Fecha de emisión</th>
+                        <th>Vigencia</th>
+                        <th>Notas</th>
+                        <th class="text-end pe-4">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cuerpoRecetas"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/farmacia-buscar.js}"></script>
+
+</body>
+</html>

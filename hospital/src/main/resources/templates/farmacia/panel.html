@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<div class="hh-shell flex-grow-1">
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<main class="flex-grow-1 hh-section-tight">
+    <div class="container">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
+            <div>
+                <span class="hh-eyebrow-section">Panel interno · CU-11</span>
+                <h1 class="hh-section-title mb-0">Farmacia — Despacho de Medicamentos</h1>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/inventario" class="btn btn-outline-teal btn-lg">
+                    <i class="fas fa-boxes-stacked me-2"></i>Bitácora de Inventario
+                </a>
+                <!-- Paso 1: "Nuevo Despacho" -->
+                <a href="/farmacia/despacho" class="btn btn-accent btn-lg">
+                    <i class="fas fa-prescription-bottle-medical me-2"></i>Nuevo Despacho
+                </a>
+            </div>
+        </div>
+
+        <div id="alertaError" class="alert alert-danger d-none"></div>
+
+        <div class="hh-card p-0">
+            <div class="px-4 pt-4 pb-2">
+                <h3 class="mb-0">Despachos recientes de mi sucursal</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr style="background: var(--color-primary-50);">
+                        <th class="ps-4">Despacho</th>
+                        <th>Receta</th>
+                        <th>Paciente</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th class="pe-4">Fecha</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cuerpoRecientes"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/farmacia.js}"></script>
+
+</body>
+</html>
